@@ -29,6 +29,9 @@
             <li>
                 Silo
             </li>
+            <li>
+                Operatori
+            </li>
         </ul>
     </nav>
 </body>
