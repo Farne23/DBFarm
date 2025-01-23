@@ -9,7 +9,7 @@ navItems.forEach(navItem => {
         }
         const pageName = this.textContent.trim().toLowerCase();
 
-        const apiUrl = `api/${pageName}-main.php`; 
+        const apiUrl = `${pageName}-main.php`; 
         fetch(apiUrl)
             .then(response => {
                 if (!response.ok) {

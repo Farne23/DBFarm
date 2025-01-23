@@ -17,18 +17,31 @@ CREATE TABLE contratti_impiego (
     data_inizio DATE NOT NULL,
     durata INT NOT NULL,
     paga_oraria DECIMAL(10, 2) NOT NULL,
+    UNIQUE(CF, data_inizio),
     PRIMARY KEY (CF, data_inizio), 
-    FOREIGN KEY (CF) REFERENCES operatori(CF),
-    CONSTRAINT no_overlapping_contracts CHECK (
-        NOT EXISTS (
-            SELECT 1
-            FROM contratti_impiego c1
-            JOIN contratti_impiego c2
-            ON c1.CF = c2.CF AND c1.data_inizio < DATE_ADD(c2.data_inizio, INTERVAL c2.durata DAY)
-            AND DATE_ADD(c1.data_inizio, INTERVAL c1.durata DAY) > c2.data_inizio
-        )
-    )
+    FOREIGN KEY (CF) REFERENCES operatori(CF)
 );
+
+DELIMITER $$
+
+CREATE TRIGGER check_contract_overlap
+BEFORE INSERT ON contratti_impiego
+FOR EACH ROW
+BEGIN
+    DECLARE conflict_count INT;
+    SELECT COUNT(*) INTO conflict_count
+    FROM contratti_impiego
+    WHERE NEW.CF = CF
+      AND NEW.data_inizio < DATE_ADD(data_inizio, INTERVAL durata DAY)
+      AND DATE_ADD(NEW.data_inizio, INTERVAL NEW.durata DAY) > data_inizio;
+    IF conflict_count > 0 THEN
+        SIGNAL SQLSTATE '45000'
+        SET MESSAGE_TEXT = 'Errore: Sovrapposizione di contratti per lo stesso operatore.';
+    END IF;
+END;
+$$
+
+DELIMITER ;
 
 -- Inserimento dati nella tabella operatori
 INSERT INTO operatori (CF, nome, cognome, data_nascita, telefono) VALUES
