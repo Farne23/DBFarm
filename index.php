@@ -3,7 +3,7 @@
 
 //Base Template
 $templateParams["titolo"] = "DBFarm";
-// $templateParams["js"] = array("js/index.js", "js/nav.js", "js/header.js");
+$templateParams["js"] = array("js/index.js");
 
 //Index template
 

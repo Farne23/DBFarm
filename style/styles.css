@@ -49,7 +49,59 @@ nav > ul > li{
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 12px;
+    font-size: 16px;
     width: 90px;
     padding: 9px;
+}
+
+main{
+    margin: 20px;
+    padding: 10px;
+    border: 1px solid #A24936;
+}
+
+/* Footer Styles */
+.footer {
+    background-color: #A24936; /* Arancione */
+    color: #fff; /* Testo bianco */
+    padding: 15px 20px;
+    font-size: 12px; /* Font più piccolo */
+}
+
+/* Contenuto del footer */
+.footer-content {
+    max-width: 800px;
+}
+
+.footer-columns {
+    display: flex;
+    justify-content: space-between;
+}
+
+.footer-columns ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.footer-columns ul li {
+    margin-bottom: 8px;
+}
+
+.footer-columns ul li a {
+    color: #fff; /* Link bianchi */
+    text-decoration: none;
+    transition: color 0.3s;
+}
+
+.footer-columns ul li a:hover {
+    color: #1a252f; /* Colore scuro per hover */
+}
+
+/* Copyright */
+.footer-bottom {
+    margin-top: 15px;
+    font-size: 11px; /* Font ancora più piccolo per il copyright */
+    border-top: 1px solid rgba(255, 255, 255, 0.3);
+    padding-top: 10px;
 }
