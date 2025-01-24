@@ -35,8 +35,9 @@
         </ul>
     </nav>
     <main>
-        <h2>Dev'esserci un errore</h2>
-        <p>Nulla da vedere qui.. </p>
+        <?php include($templateParams["main-content"]) ?>
+        <!-- <h2>Dev'esserci un errore</h2>
+        <p>Nulla da vedere qui.. </p> -->
     </main>
     <?php
     if (isset($templateParams["js"]) && is_array($templateParams["js"])) {
@@ -52,7 +53,8 @@
         <div class="footer-columns">
             <ul>
                 <li>Email personale: <a href="mailto:michele.farneti23@gmail.com">michele.farneti23@gmail.com</a></li>
-                <li>Email istituzionale: <a href="mailto:michele.farneti@tstudio.unibo.it">michele.farneti@tstudio.unibo.it</a></li>
+                <li>Email istituzionale: <a
+                        href="mailto:michele.farneti@studio.unibo.it">michele.farneti@tstudio.unibo.it</a></li>
             </ul>
             <ul>
                 <li>Profilo GitHub: <a href="https://github.com/Farne23" target="_blank">Farne23</a></li>
@@ -64,4 +66,5 @@
         &copy; 2025 - Tutti i diritti riservati.
     </div>
 </footer>
+
 </html>

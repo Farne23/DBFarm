@@ -109,7 +109,6 @@ main{
 main > section > ul > li{
     border: 1px solid #A24936;
     margin: 10px;
-    width: 90%;
 }
 
 main > section > ul > li > div{
@@ -122,8 +121,30 @@ main > section > ul > li > div > span{
 }
 
 main > section > ul > li > div > ul > li{
-    border: 1px solid black;
+    width: 80%;
+    margin: 5px 5px 5px 0px;
+    display: flex;
+    flex-direction: row;
 }
+
+.expired{
+    opacity: 60%;
+}
+
+main > section > ul > li > div > ul > li > *{
+    display: flex;
+    width: 25%;
+}
+
+main > section > ul > li > div > ul > li.active > span:last-of-type{
+    text-align: center;
+    display: inline-block;
+}
+
+main > section > ul > li > div > ul{
+    width: 100%;
+}
+
 
 main > section > ul > li > div:first-of-type{
     padding: 5px 5px;
@@ -132,4 +153,70 @@ main > section > ul > li > div:first-of-type{
 .white-on-orange{
     background-color: #A24936;
     color: white;
+}
+
+.orange-on-white{
+    background-color: #A24936;
+    color: white;
+}
+
+.input-line {
+    display: flex; 
+    gap: 20px;
+    align-items: flex-start;
+    border: 1px solid #A24936;
+}
+
+.input-line.fail {
+    border: 1px solid red;
+    color: red;
+}
+
+.input-line.success {
+    color: green;
+    border: 1px solid green;
+}
+
+.input-group {
+    display: flex;
+    flex-direction: column; 
+    align-items: left; 
+    justify-content: center;
+    width: 100px;
+    padding: 5px;
+    height: 50px;
+}
+
+.input-group label {
+    margin-bottom: 5px;
+    font-weight: bold;
+    font-size: 11px;
+    padding-left: 5px;
+}
+
+.input-group input ,.input-group select {
+    padding: 5px; 
+    font-size: 10px; 
+    border: 1px solid #ccc; 
+    border-radius: 4px; 
+    width: 100%;
+    box-sizing: border-box; 
+}
+
+.input-group:last-of-type{
+    margin-left: auto;
+}
+
+.input-group input[type="submit"] {
+    border: none;
+    cursor: pointer;
+    padding: 8px 12px;
+    border-radius: 4px;
+    font-weight: bold;
+    border: 1px solid #A24936;
+}
+
+.input-group input[type="submit"]:hover {
+    background-color: white;
+    color: #A24936;
 }
