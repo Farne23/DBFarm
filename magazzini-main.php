@@ -1,12 +1,12 @@
 <?php
 require_once 'bootstrap.php';
-$Operatori = $dbh->getMagazziniListComplete()
+$Magazzini = $dbh->getMagazziniListComplete();
     ?>
     
-<section id="listaOperatori">
+<section id="listaMagazzini">
     <ul>
         <?php
-        echo createListaOperatori($Operatori);
+        echo createListaMagazzini($Magazzini);
         ?>
     </ul>
 </section>
