@@ -38,34 +38,35 @@ $Operatori = $dbh->getOperatoriListComplete()
     <h3>
         Registra un contratto
     </h3>
-    <div class="input-line">
-        <div class="input-group">
-            <label for="CFnewContratto">Operatore</label>
-            <select id="CFnewContratto" name="siti">
-                <?php
-                foreach ($Operatori as $operatore) {
-                    echo '<option value="' . $operatore["CF"] . '" selected="selected">' . $operatore["CF"] . '</option>;';
-                }
-                ?>
-            </select>
+    <form id="newContrattoForm">
+        <div class="input-line" id="newContrattoInput">
+            <div class="input-group">
+                <label for="CFnewContratto">Operatore</label>
+                <select id="CFnewContratto" name="siti">
+                    <?php
+                    foreach ($Operatori as $operatore) {
+                        echo '<option value="' . $operatore["CF"] . '" selected="selected">' . $operatore["CF"] . '</option>;';
+                    }
+                    ?>
+                </select>
+            </div>
+            <div class="input-group">
+                <label for="dataInizio">Inizio</label>
+                <input id="dataInizio" type="date" required />
+            </div>
+            <div class="input-group">
+                <label for="durataNewContratto">Durata</label>
+                <input id="durataNewContratto" type="text" required pattern="^[0-9]{1,4}$" maxlength="4" title="Indica il numero di giorni di durata del contratto (max 99999)"  required />
+            </div>
+            <div class="input-group">
+                <label for="pagaNewContratto">Paga</label>
+                <input id="pagaNewContratto" type="text" required pattern="^\d{2}.\d{2}$" maxlength="5" title="Indica il numero nel formato 12.00"/>
+            </div>
+            <div class="input-group">
+                <input id="recordNewContratto" type="submit" value="Aggiungi" class="orange-on-white" />
+            </div>
         </div>
-        <div class="input-group">
-            <label for="dataInizio">Inizio</label>
-            <input id="dataInizio" type="date" />
-        </div>
-        <div class="input-group">
-            <label for="durataNewContratto">Durata</label>
-            <input id="durataNewContratto" type="text" />
-        </div>
-        <div class="input-group">
-            <label for="pagaNewContratto">Paga</label>
-            <input id="pagaNewContratto" type="text" />
-        </div>
-        <div class="input-group">
-
-            <input id="recordNewContratto" type="button" value="Aggiungi" class="orange-on-white" />
-        </div>
-    </div>
+    </form>
     <h3>
         Operatori registrati
     </h3>

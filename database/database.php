@@ -46,6 +46,17 @@ class DatabaseHelper
             return false;
         }
     }
+
+    function registraNuovoContratto($CF, $data, $durata, $paga)
+    {
+        $stmt = $this->db->prepare("INSERT INTO contratti_impiego (CF, data_inizio, durata, paga_oraria) VALUES (?,?, ?,?)");
+        $stmt->bind_param("ssss", $CF, $data, $durata, $paga);
+        if ($stmt->execute()) {
+            return true;
+        } else {
+            return false;
+        }
+    }
 }
 
 ?>

@@ -14,22 +14,22 @@
     </header>
     <nav>
         <ul>
-            <li class="selected">
+            <li <?php if(isset($templateParams["sezione"]) && $templateParams["sezione"]=="Lavorazioni"){echo 'class="selected"';}?>>
                 Lavorazioni
             </li>
-            <li>
+            <li <?php if(isset($templateParams["sezione"]) && $templateParams["sezione"]=="Terreni"){echo 'class="selected"';}?>>
                 Terreni
             </li>
-            <li>
+            <li <?php if(isset($templateParams["sezione"]) && $templateParams["sezione"]=="Macchinari"){echo 'class="selected"';}?>>
                 Macchinari
             </li>
-            <li>
+            <li <?php if(isset($templateParams["sezione"]) && $templateParams["sezione"]=="Magazzzini"){echo 'class="selected"';}?>>
                 Magazzini
             </li>
-            <li>
+            <li <?php if(isset($templateParams["sezione"]) && $templateParams["sezione"]=="Silo"){echo 'class="selected"';}?>>
                 Silo
             </li>
-            <li>
+            <li <?php if(isset($templateParams["sezione"]) && $templateParams["sezione"]=="Operatori"){echo 'class="selected"';}?>>
                 Operatori
             </li>
         </ul>

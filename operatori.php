@@ -3,6 +3,7 @@ require_once 'bootstrap.php';
 
 //Base Template
 $templateParams["titolo"] = "DBFarm";
+$templateParams["sezione"] = "Operatori";
 $templateParams["js"] = array("js/index.js","js/operatori.js");
 $templateParams["main-content"] = "operatori-main.php";
 

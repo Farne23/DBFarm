@@ -2,6 +2,7 @@ document.getElementById('newOperatoreForm').addEventListener('submit', async fun
     event.preventDefault();
     // Raccogli i dati dai campi input
     const data = {
+        type:"newOperatore",
         CF: document.getElementById('CFnewOperatore').value,
         nome: document.getElementById('nomenewOperatore').value,
         cognome: document.getElementById('cognomenewOperatore').value,
@@ -44,6 +45,60 @@ document.getElementById('newOperatoreForm').addEventListener('submit', async fun
                 });
         } else {
             const newOperatoreInput = document.getElementById('newOperatoreInput');
+            newOperatoreInput.classList.add('fail');
+            setTimeout(() => {
+                newOperatoreInput.classList.remove('fail');
+            }, 2000);
+        }
+    } catch (error) {
+        console.error('Errore durante la richiesta:', error);
+    }
+});
+
+document.getElementById('newContrattoForm').addEventListener('submit', async function (event) {
+    event.preventDefault();
+    const data = {
+        type:"newContratto",
+        CF: document.getElementById('CFnewContratto').value,
+        data: document.getElementById('dataInizio').value,
+        durata: document.getElementById('durataNewContratto').value,
+        paga: document.getElementById('pagaNewContratto').value,
+    };
+
+    document.getElementById('CFnewContratto').value = '';
+    document.getElementById('dataInizio').value = '';
+    document.getElementById('durataNewContratto').value = '';
+    document.getElementById('pagaNewContratto').value = '';
+
+    // Invia i dati al server tramite Fetch
+    try {
+        const response = await fetch('process.php', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(data),
+        });
+        const result = await response.json();
+
+        if (result.success) {
+            const newOperatoreInput = document.getElementById('newContrattoInput');
+            // Aggiungi la classe all'elemento
+            newOperatoreInput.classList.add('success');
+            setTimeout(() => {
+                newOperatoreInput.classList.remove('success');
+            }, 2000);
+
+            fetch('api/lista-operatori.php')
+                .then(response => response.text())
+                .then(data => {
+                    document.getElementById('listaOperatori').innerHTML = data;
+                })
+                .catch(error => {
+                    console.error('Errore nel caricare il contenuto:', error);
+                });
+        } else {
+            const newOperatoreInput = document.getElementById('newContrattoInput');
             newOperatoreInput.classList.add('fail');
             setTimeout(() => {
                 newOperatoreInput.classList.remove('fail');
