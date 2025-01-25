@@ -60,6 +60,18 @@ function createListaMagazzini($magazzini)
             $listaMagazzini .= "<span> Quantità: " . $prodotto["quantita"] . " </span>";
             $listaMagazzini .= "<span> Deposito: " . $prodotto["data_ultimo_deposito"] . " </span>";
             $listaMagazzini .= "</li>";
+            $listaMagazzini .= "<table>";
+            $listaMagazzini .= "<tr>";
+            $listaMagazzini .= "<td>Costo:</td>";
+            $listaMagazzini .= "<td>" . $prodotto["costo"] . "</td>";
+            $listaMagazzini .= "</tr>";
+            $listaMagazzini .= "<tr>";
+            $listaMagazzini .= "<td>Target:";
+            $listaMagazzini .= "</td>";
+            $listaMagazzini .= "<td>" . $prodotto["target"] . "</td>";
+            $listaMagazzini .= "</tr>";
+            $listaMagazzini .= "</table>";
+            $listaMagazzini .= "</li>";
         }
         $listaMagazzini .= "</ul>";
         $listaMagazzini .= "</div>";
