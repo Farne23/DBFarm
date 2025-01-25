@@ -181,5 +181,56 @@ class DatabaseHelper
             return false;
         }
     }
+
+    function getMacchinariList()
+    {
+        $stmt = $this->db->prepare("SELECT macchinari.*, GROUP_CONCAT(CONCAT(nome_caratteristica, ': ', valore) SEPARATOR ', ') AS caratteristiche FROM specifiche_caratteristiche INNER JOIN macchinari on specifiche_caratteristiche.idMacchinario = macchinari.idMacchinario GROUP BY specifiche_caratteristiche.idMacchinario");
+        $stmt->execute();
+        $result = $stmt->get_result();
+        return $result->fetch_all(MYSQLI_ASSOC);
+    }
+
+    function getMacchinariListFiltered($tipologia, $semovente)
+    {
+        switch ($semovente) {
+            case "semoventeQualsiasi":
+                if ($tipologia == "qualsiasi") {
+                    return $this->getMacchinariList();
+                } else {
+                    $stmt = $this->db->prepare("SELECT macchinari.*, GROUP_CONCAT(CONCAT(nome_caratteristica, ': ', valore) SEPARATOR ', ') AS caratteristiche FROM specifiche_caratteristiche INNER JOIN macchinari on specifiche_caratteristiche.idMacchinario = macchinari.idMacchinario WHERE tipologia = ? GROUP BY specifiche_caratteristiche.idMacchinario");
+                    $stmt->bind_param("s", $tipologia);
+                }
+                break;
+            case "semoventeSi":
+                if ($tipologia == "qualsiasi") {
+                    $stmt = $this->db->prepare("SELECT macchinari.*, GROUP_CONCAT(CONCAT(nome_caratteristica, ': ', valore) SEPARATOR ', ') AS caratteristiche FROM specifiche_caratteristiche INNER JOIN macchinari on specifiche_caratteristiche.idMacchinario = macchinari.idMacchinario WHERE semovente=true GROUP BY specifiche_caratteristiche.idMacchinario");
+                } else {
+                    $stmt = $this->db->prepare("SELECT macchinari.*, GROUP_CONCAT(CONCAT(nome_caratteristica, ': ', valore) SEPARATOR ', ') AS caratteristiche FROM specifiche_caratteristiche INNER JOIN macchinari on specifiche_caratteristiche.idMacchinario = macchinari.idMacchinario WHERE semovente=true AND tipologia = ? GROUP BY specifiche_caratteristiche.idMacchinario");
+                    $stmt->bind_param("s", $tipologia);
+                }
+                break;
+            case "semoventeNo":
+                if ($tipologia == "qualsiasi") {
+                    $stmt = $this->db->prepare("SELECT macchinari.*, GROUP_CONCAT(CONCAT(nome_caratteristica, ': ', valore) SEPARATOR ', ') AS caratteristiche FROM specifiche_caratteristiche INNER JOIN macchinari on specifiche_caratteristiche.idMacchinario = macchinari.idMacchinario WHERE semovente=false GROUP BY specifiche_caratteristiche.idMacchinario");
+                } else {
+                    $stmt = $this->db->prepare("SELECT macchinari.*, GROUP_CONCAT(CONCAT(nome_caratteristica, ': ', valore) SEPARATOR ', ') AS caratteristiche FROM specifiche_caratteristiche INNER JOIN macchinari on specifiche_caratteristiche.idMacchinario = macchinari.idMacchinario WHERE semovente=false AND tipologia = ? GROUP BY specifiche_caratteristiche.idMacchinario");
+                    $stmt->bind_param("s", $tipologia);
+                }
+                break;
+        }
+
+        $stmt->execute();
+        $result = $stmt->get_result();
+        return $result->fetch_all(MYSQLI_ASSOC);
+    }
+
+
+    function getListaTipologie()
+    {
+        $stmt = $this->db->prepare("SELECT nome_tipologia FROM tipologie_macchinari");
+        $stmt->execute();
+        $result = $stmt->get_result();
+        return $result->fetch_all(MYSQLI_ASSOC);
+    }
 }
 ?>

@@ -314,3 +314,184 @@ VALUES
     ('Lenticchie', 18),
     ('Mais', 18),
     ('Frumento', 18);
+
+CREATE TABLE tipologie_macchinari (
+    nome_tipologia VARCHAR(100) PRIMARY KEY,
+    descrizione TEXT
+);
+
+CREATE TABLE caratteristiche_macchinari (
+    nome_caratteristica VARCHAR(100) PRIMARY KEY,
+    descrizione TEXT
+);
+
+CREATE TABLE macchinari (
+    idMacchinario INT AUTO_INCREMENT PRIMARY KEY,
+    tipologia VARCHAR(100),
+    marca VARCHAR(100),
+    modello VARCHAR(100),
+    costo_orario DECIMAL(10, 2),
+    telaio VARCHAR(100) UNIQUE,
+    potenza DECIMAL(10, 2),
+    targa VARCHAR(100),
+    serbatoio DECIMAL(10, 2),
+    semovente BOOLEAN NOT NULL DEFAULT FALSE,
+    FOREIGN KEY (tipologia) REFERENCES tipologie_macchinari(nome_tipologia)
+);
+
+CREATE TABLE attinenze_caratteristiche (
+    nome_tipologia VARCHAR(100),
+    nome_caratteristica VARCHAR(100),
+    PRIMARY KEY (nome_tipologia, nome_caratteristica),
+    FOREIGN KEY (nome_tipologia) REFERENCES tipologie_macchinari(nome_tipologia),
+    FOREIGN KEY (nome_caratteristica) REFERENCES caratteristiche_macchinari(nome_caratteristica)
+);
+
+CREATE TABLE specifiche_caratteristiche (
+    idMacchinario INT,
+    nome_caratteristica VARCHAR(100),
+    valore TEXT,
+    PRIMARY KEY (idMacchinario, nome_caratteristica),
+    FOREIGN KEY (idMacchinario) REFERENCES macchinari(idMacchinario),
+    FOREIGN KEY (nome_caratteristica) REFERENCES caratteristiche_macchinari(nome_caratteristica)
+);
+
+INSERT INTO tipologie_macchinari (nome_tipologia, descrizione)
+VALUES 
+('Trattore', 'Macchinario agricolo utilizzato per trainare attrezzature e macchine operatrici.'),
+('Mietitrebbia', 'Macchina agricola utilizzata per mietere e trebbiare cereali e semi.'),
+('Irroratrice', 'Macchina utilizzata per l’applicazione di fertilizzanti e pesticidi liquidi.'),
+('Seminatrice', 'Macchina che permette la distribuzione uniforme dei semi nel terreno.'),
+('Spandiconcime', 'Macchinario usato per distribuire fertilizzanti solidi nei campi.'),
+('Aratro', 'Attrezzo agricolo che prepara il terreno rivoltando la terra.'),
+('Erpice', 'Strumento per la lavorazione superficiale del terreno, ad esempio per sminuzzare le zolle.'),
+('Pala Gommata', 'Macchina semovente per movimentare grandi quantità di materiali.'),
+('Carrello Elevatore', 'Macchina industriale per il sollevamento e lo spostamento di merci su pallet.'),
+('Rotopressa', 'Macchina per comprimere e legare il fieno in balle cilindriche.');
+
+INSERT INTO macchinari (Tipologia, marca, modello, costo_orario, telaio, potenza, targa, serbatoio, semovente)
+VALUES 
+('Trattore', 'Fendt', '720 Vario', 50.00, 'FENDT001', 200, 'AB123CD', 400, TRUE),
+('Trattore', 'Fendt', '930 Vario', 75.00, 'FENDT002', 300, 'EF456GH', 500, TRUE),
+('Trattore', 'Valtra', 'N175', 40.00, 'VALTRA001', 175, 'IJ789KL', 350, TRUE),
+('Trattore', 'Valtra', 'T234', 55.00, 'VALTRA002', 234, 'MN012OP', 450, TRUE),
+('Mietitrebbia', 'Claas', 'Lexion 770', 120.00, 'CLAAS001', 500, 'QR345ST', 600, TRUE);
+
+INSERT INTO macchinari (Tipologia, marca, modello, costo_orario, telaio, potenza, targa, serbatoio, semovente)
+VALUES 
+('Irroratrice', 'John Deere', 'R4045', 30.00, 'JD001', NULL, NULL, NULL, FALSE),
+('Seminatrice', 'Kuhn', 'ESPRO 6000', 20.00, 'KUHN001', NULL, NULL,NULL, FALSE),
+('Spandiconcime', 'Amazone', 'ZA-TS', 15.00, 'AMAZONE001', NULL, NULL, NULL, FALSE),
+('Aratro', 'Lemken', 'Diamant 16', 18.00, 'LEMKEN001', NULL, NULL, NULL, FALSE),
+('Erpice', 'Maschio Gaspardo', 'Dominator 630', 22.00, 'MASCHIO001', NULL, NULL, NULL, FALSE);
+
+INSERT INTO caratteristiche_macchinari (nome_caratteristica, descrizione)
+VALUES 
+('Larghezza', 'Larghezza totale del macchinario in metri.'),
+('Volume Serbatoio di Raccolta', 'Capacità del serbatoio per la raccolta dei materiali in litri.'),
+('Diametro Pneumatici', 'Diametro delle ruote del macchinario in centimetri.'),
+('Volume Balle', 'Volume delle balle prodotte in metri cubi.'),
+('Numero Vomeri', 'Numero di vomeri presenti sull’aratro.'),
+('Volume Cisterna', 'Capacità della cisterna in litri.'),
+('Aggancio Caricatore Frontale', 'Indica se il macchinario supporta un caricatore frontale (Sì/No).');
+
+-- Associazione della caratteristica "Larghezza"
+INSERT INTO attinenze_caratteristiche (nome_tipologia, nome_caratteristica)
+VALUES 
+('Mietitrebbia', 'Larghezza'),
+('Aratro', 'Larghezza'),
+('Erpice', 'Larghezza'),
+('Irroratrice', 'Larghezza');
+
+-- Associazione della caratteristica "Volume Serbatoio di Raccolta"
+INSERT INTO attinenze_caratteristiche (nome_tipologia, nome_caratteristica)
+VALUES 
+('Mietitrebbia', 'Volume Serbatoio di Raccolta');
+
+-- Associazione della caratteristica "Diametro Pneumatici"
+INSERT INTO attinenze_caratteristiche (nome_tipologia, nome_caratteristica)
+VALUES 
+('Carrello Elevatore', 'Diametro Pneumatici'),
+('Trattore', 'Diametro Pneumatici'),
+('Mietitrebbia', 'Diametro Pneumatici');
+
+-- Associazione della caratteristica "Volume Balle"
+INSERT INTO attinenze_caratteristiche (nome_tipologia, nome_caratteristica)
+VALUES 
+('Rotopressa', 'Volume Balle');
+
+-- Associazione della caratteristica "Numero Vomeri"
+INSERT INTO attinenze_caratteristiche (nome_tipologia, nome_caratteristica)
+VALUES 
+('Aratro', 'Numero Vomeri');
+
+-- Associazione della caratteristica "Volume Cisterna"
+INSERT INTO attinenze_caratteristiche (nome_tipologia, nome_caratteristica)
+VALUES 
+('Irroratrice', 'Volume Cisterna'),
+('Seminatrice', 'Volume Cisterna'),
+('Spandiconcime', 'Volume Cisterna');
+
+-- Associazione della caratteristica "Aggancio Caricatore Frontale"
+INSERT INTO attinenze_caratteristiche (nome_tipologia, nome_caratteristica)
+VALUES 
+('Trattore', 'Aggancio Caricatore Frontale');
+
+INSERT INTO specifiche_caratteristiche (idMacchinario, nome_caratteristica, valore)
+VALUES 
+(1, 'Diametro Pneumatici', '150'),
+(1, 'Aggancio Caricatore Frontale', 'Sì');
+
+-- Trattore Fendt 930 Vario
+INSERT INTO specifiche_caratteristiche (idMacchinario, nome_caratteristica, valore)
+VALUES 
+(2, 'Diametro Pneumatici', '160'),
+(2, 'Aggancio Caricatore Frontale', 'Sì');
+
+-- Trattore Valtra N175
+INSERT INTO specifiche_caratteristiche (idMacchinario, nome_caratteristica, valore)
+VALUES 
+(3, 'Diametro Pneumatici', '140'),
+(3, 'Aggancio Caricatore Frontale', 'No');
+
+-- Trattore Valtra T234
+INSERT INTO specifiche_caratteristiche (idMacchinario, nome_caratteristica, valore)
+VALUES 
+(4, 'Diametro Pneumatici', '150'),
+(4, 'Aggancio Caricatore Frontale', 'Sì');
+
+-- Mietitrebbia Claas Lexion 770
+INSERT INTO specifiche_caratteristiche (idMacchinario, nome_caratteristica, valore)
+VALUES 
+(5, 'Larghezza', '4.5'),
+(5, 'Volume Serbatoio di Raccolta', '12000'),
+(5, 'Diametro Pneumatici', '180');
+
+-- Irroratrice John Deere R4045
+INSERT INTO specifiche_caratteristiche (idMacchinario, nome_caratteristica, valore)
+VALUES 
+(6, 'Larghezza', '12.0'),
+(6, 'Volume Cisterna', '5000');
+
+-- Seminatrice Kuhn ESPRO 6000
+INSERT INTO specifiche_caratteristiche (idMacchinario, nome_caratteristica, valore)
+VALUES 
+(7, 'Larghezza', '6.0'),
+(7, 'Volume Cisterna', '2000');
+
+-- Spandiconcime Amazone ZA-TS
+INSERT INTO specifiche_caratteristiche (idMacchinario, nome_caratteristica, valore)
+VALUES 
+(8, 'Larghezza', '3.0'),
+(8, 'Volume Cisterna', '1500');
+
+-- Aratro Lemken Diamant 16
+INSERT INTO specifiche_caratteristiche (idMacchinario, nome_caratteristica, valore)
+VALUES 
+(9, 'Larghezza', '3.0'),
+(9, 'Numero Vomeri', '6');
+
+-- Erpice Maschio Gaspardo Dominator 630
+INSERT INTO specifiche_caratteristiche (idMacchinario, nome_caratteristica, valore)
+VALUES 
+(10, 'Larghezza', '6.3');

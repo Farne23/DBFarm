@@ -31,8 +31,8 @@ $Prodotti = $dbh->getListaProdotti();
         </div>
         <div class="input-group">
             <label for="quantitaSelezionata">Quantitá</label>
-            <input id="quantitaSelezionata" type="text" required pattern="^[0-9]{1,4}$" maxlength="5"
-                title="La massima capienza del magazzino é: " />
+            <input id="quantitaSelezionata" type="text" required pattern="^[0-9]{1,5}$" maxlength="5"
+                title="Cifra non accetabile " />
         </div>
         <div class="input-group">
             <input id="recordNewDeposito" type="submit" value="Registra" class="orange-on-white" />

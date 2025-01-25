@@ -12,3 +12,26 @@ SELECT prodotti.*, depositi.quantita as 'quantita', depositi.data_ultimo_deposit
 SELECT varieta FROM prodotti WHERE idProdotto = ?
 SELECT GROUP_CONCAT(obiettivi_diserbo.nome_infestante SEPARATOR ', ') as 'target' FROM obiettivi_diserbo WHERE idProdotto= ?
 SELECT GROUP_CONCAT(nutrizioni.nome_coltura SEPARATOR ', ') as 'target' FROM nutrizioni WHERE idProdotto= ?
+
+SELECT 
+            SUM(depositi.quantita) + ? > edifici.capacita_magazzino AS 'isFull'
+        FROM 
+            edifici 
+        INNER JOIN 
+            depositi ON edifici.idEdificio = depositi.idEdificio 
+        WHERE 
+            edifici.idEdificio = ? 
+        GROUP BY 
+            edifici.idEdificio
+
+            SELECT COUNT(*) > 0 AS 'isPresent'
+                FROM depositi
+                WHERE depositi.idEdificio = ?
+                AND depositi.idProdotto = ?
+
+                UPDATE depositi 
+                            SET quantita = quantita + ?, data_ultimo_deposito = ? 
+                            WHERE idEdificio = ? AND idProdotto = ?
+                            NSERT INTO depositi (idEdificio, idProdotto, quantita, data_ultimo_deposito) VALUES (?,?,?,?)
+
+
