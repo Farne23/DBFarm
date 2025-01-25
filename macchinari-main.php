@@ -3,8 +3,38 @@ require_once 'bootstrap.php';
 $tipologie= $dbh->getListaTipologie();
 ?>
 
+
 <h3>
-    Registra un nuovo deposito
+    Registra un macchinario
+</h3>
+<form id="formMacchinario" method="POST" action="salva_macchinario.php">
+    <label for="tipologiaInserimento">Seleziona tipologia:</label>
+    <select id="tipologiaInserimento" name="tipologia" required>
+        <option value="">Seleziona tipologia</option>
+        <?php foreach ($tipologie as $tipologia): ?>
+            <option value="<?php echo $tipologia; ?>"><?php echo $tipologia["nome_tipologia"]; ?></option>
+        <?php endforeach; ?>
+    </select>
+
+    <br><br>
+
+    <label for="semovente">Semovente:</label>
+    <select id="semovente" name="semovente" required>
+        <option value="1">Sì</option>
+        <option value="0">No</option>
+    </select>
+
+    <br><br>
+
+    <div id="formFields"></div>
+
+    <div id="caratteristiche-associate"> </div>
+
+    <button type="submit">Salva Macchinario</button>
+</form>
+
+<h3>
+    Filtra macchinari
 </h3>
 <form id="filtraMacchinari">
     <div class="input-line" id="newDepositoInput">

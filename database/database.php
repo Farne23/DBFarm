@@ -224,13 +224,27 @@ class DatabaseHelper
         return $result->fetch_all(MYSQLI_ASSOC);
     }
 
+    function getCratteristicheDellaTipologia($tipologia)
+    {
+        $stmt = $this->db->prepare("SELECT nome_caratteristica FROM attinenze_caratteristiche WHERE nome_tipologia = ?");
+        $stmt->bind_param("s", $tipologia);
+        $stmt->execute();
+        $result = $stmt->get_result();
+        return $result->fetch_all(MYSQLI_ASSOC);
+    }
 
     function getListaTipologie()
     {
         $stmt = $this->db->prepare("SELECT nome_tipologia FROM tipologie_macchinari");
         $stmt->execute();
-        $result = $stmt->get_result();
-        return $result->fetch_all(MYSQLI_ASSOC);
+        $resultBase = $stmt->get_result();
+        $resultBase = $resultBase->fetch_all(MYSQLI_ASSOC);
+
+        foreach ($resultBase as &$row) {
+            $tipologia = $row['nome_tipologia'];
+            $row['caratteristiche'] = $this->getCratteristicheDellaTipologia($tipologia);
+        }
+        return $resultBase;
     }
 }
 ?>
