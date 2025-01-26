@@ -298,5 +298,23 @@ class DatabaseHelper
             return false;
         }
     }
+
+    public function getGranulometrie()
+    {
+        $stmt = $this->db->prepare("SELECT nome_granulometria FROM granulometrie");
+        $stmt->execute();
+        $result = $stmt->get_result();
+        return $result->fetch_all(MYSQLI_ASSOC);
+    }
+
+    public function registraNuovoTerreno($nome, $superficie, $limo, $sabbia, $argilla, $granulometria, $comune, $particella, $sezione)
+    {
+        $stmt = $this->db->prepare("INSERT INTO terreni (nome, superficie, perc_limo, perc_sabbia, perc_argilla, granulometria, comune, particella, sezione) 
+                                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)");
+
+        // Associa i parametri alla query
+        $stmt->bind_param("ssdddsdss", $nome, $superficie, $limo, $sabbia, $argilla, $granulometria, $comune, $particella, $sezione);
+        return $stmt->execute();
+    }
 }
 ?>

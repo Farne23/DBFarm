@@ -495,3 +495,149 @@ VALUES
 INSERT INTO specifiche_caratteristiche (idMacchinario, nome_caratteristica, valore)
 VALUES 
 (10, 'Larghezza', '6.3');
+
+CREATE TABLE granulometrie (
+    nome_granulometria VARCHAR(255) NOT NULL PRIMARY KEY,
+    umidita_minima DECIMAL(5,2) NOT NULL,
+    umidita_massima DECIMAL(5,2) NOT NULL,
+    ph_minimo DECIMAL(4,2) NOT NULL,
+    ph_massimo DECIMAL(4,2) NOT NULL
+);
+
+INSERT INTO granulometrie (nome_granulometria, umidita_minima, umidita_massima, ph_minimo, ph_massimo)
+VALUES
+    ('Sabbioso Fine', 5.00, 10.00, 6.50, 7.50),
+    ('Sabbioso Grosso', 6.00, 12.00, 6.00, 8.00),
+    ('Limoso', 8.00, 15.00, 5.50, 7.00),
+    ('Argilloso', 12.00, 25.00, 5.00, 6.50),
+    ('Sabbioso Argilloso', 10.00, 18.00, 5.50, 7.50),
+    ('Sabbioso Limoso', 7.00, 14.00, 6.00, 8.00),
+    ('Limoso Sabbioso', 9.00, 16.00, 6.20, 7.80),
+    ('Argilloso Sabbioso', 15.00, 30.00, 5.00, 6.20),
+    ('Torba Argillosa', 20.00, 40.00, 4.50, 5.50),
+    ('Humus Argilloso', 18.00, 35.00, 6.50, 7.50);
+
+
+-- Tabella 'terreni'
+CREATE TABLE terreni (
+    idTerreno INT AUTO_INCREMENT PRIMARY KEY,
+    nome VARCHAR(255) UNIQUE NOT NULL,
+    superficie DECIMAL(10,2) NOT NULL,
+    perc_limo DECIMAL(5,2) NOT NULL,
+    perc_sabbia DECIMAL(5,2) NOT NULL,
+    perc_argilla DECIMAL(5,2) NOT NULL,
+    granulometria VARCHAR(255) NOT NULL,
+    ultima_lavorazione VARCHAR(255),
+    FOREIGN KEY (granulometria) REFERENCES granulometrie(nome_granulometria)
+);
+
+INSERT INTO terreni (nome, superficie, perc_limo, perc_sabbia, perc_argilla, granulometria)
+VALUES
+    ('Terreno 1', 100.00, 20.0, 60.0, 20.0, 'Sabbioso Grosso'),
+    ('Terreno 2', 150.00, 30.0, 50.0, 20.0, 'Argilloso'),
+    ('Terreno 3', 200.00, 25.0, 55.0, 20.0, 'Limoso Sabbioso'),
+    ('Terreno 4', 180.00, 10.0, 70.0, 20.0, 'Humus Argilloso'),
+    ('Terreno 5', 120.00, 15.0, 65.0, 20.0, 'Torba Argillosa');
+
+-- Tabella 'dati_catastali'
+CREATE TABLE dati_catastali (
+    idTerreno INT NOT NULL,
+    comune VARCHAR(255) NOT NULL,
+    particella VARCHAR(255) NOT NULL,
+    sezione VARCHAR(10) NOT NULL,
+    PRIMARY KEY (idTerreno, particella),
+    FOREIGN KEY (idTerreno) REFERENCES terreni(idTerreno)
+);
+
+INSERT INTO dati_catastali (idTerreno, comune, particella, sezione)
+VALUES
+    (1, 'Comune A', 'P1', 'A'),
+    (2, 'Comune B', 'P2', 'B'),
+    (3, 'Comune C', 'P3', 'C'),
+    (4, 'Comune D', 'P4', 'D'),
+    (5, 'Comune E', 'P5', 'E');
+
+-- Tabella 'cicli_produttivi'
+CREATE TABLE cicli_produttivi (
+    idCicloProduttivo INT AUTO_INCREMENT PRIMARY KEY,
+    idTerreno INT NOT NULL,
+    coltura_coltivata VARCHAR(255) NOT NULL,
+    data_inizio DATE NOT NULL,
+    data_fine DATE,
+    bilancio DECIMAL(10,2) NOT NULL,
+    proprietario VARCHAR(255),
+    costo DECIMAL(10,2),
+    FOREIGN KEY (idTerreno) REFERENCES terreni(idTerreno),
+    FOREIGN KEY (coltura_coltivata) REFERENCES colture(nome_coltura)
+);
+
+INSERT INTO cicli_produttivi (idTerreno, coltura_coltivata, data_inizio, data_fine, bilancio, proprietario, costo)
+VALUES
+    (1, 'Frumento', '2023-03-01', '2023-09-01', 1350, NULL,NULL),
+    (1, 'Mais', '2023-10-01', '2024-08-01', -1000.00,  NULL,NULL),
+    (1, 'Mais', '2024-10-01', NULL, -100.00,  NULL,NULL),
+    (2, 'Soia', '2023-04-01', '2023-08-01', 1800.00,  NULL,NULL),
+    (2, 'Orzo', '2023-09-01', NULL, -900.00,  NULL,NULL),
+    (3, 'Mais', '2022-03-01', '2022-09-01', 2000.00, NULL,NULL),
+    (3, 'Riso', '2023-04-01', NULL, -2500.00,  NULL,NULL),
+    (4, 'Frumento', '2022-05-01', '2022-11-01', 3000.00,  NULL,NULL),
+    (4, 'Soia', '2023-02-01', NULL, -3200.00, NULL,NULL),
+    (5, 'Orzo', '2023-01-01', '2023-06-01', 1100.00, 'Marco rossi', 950.00),
+    (5, 'Riso', '2023-07-01', NULL, -2000.00, 'Marco rossi', 1500.00);
+
+-- Tabella 'categorie_lavorazioni'
+CREATE TABLE categorie_lavorazioni (
+    nome_categoria VARCHAR(255) PRIMARY KEY,
+    descrizione TEXT
+);
+
+INSERT INTO categorie_lavorazioni (nome_categoria, descrizione)
+VALUES
+    ('Aratura', 'Preparazione del terreno con l’aratro.'),
+    ('Semina', 'Distribuzione dei semi nel terreno.'),
+    ('Fertilizzazione', 'Aggiunta di sostanze nutritive.'),
+    ('Irrigazione', 'Distribuzione di acqua al terreno.'),
+    ('Trebbiatura', 'Raccolta dei prodotti coltivati.');
+
+-- Tabella 'lavorazioni'
+CREATE TABLE lavorazioni (
+    idCicloProduttivo INT NOT NULL,
+    numero INT NOT NULL,
+    categoria VARCHAR(255) NOT NULL,
+    data_inizio DATE NOT NULL,
+    data_fine DATE,
+    PRIMARY KEY (idCicloProduttivo, numero),
+    FOREIGN KEY (idCicloProduttivo) REFERENCES cicli_produttivi(idCicloProduttivo),
+    FOREIGN KEY (categoria) REFERENCES categorie_lavorazioni(nome_categoria)
+);
+
+INSERT INTO lavorazioni (idCicloProduttivo,numero,categoria,data_inizio)
+VALUES
+(3,1,"Aratura", '2024-10-01');
+
+UPDATE terreni
+SET ultima_lavorazione = 1
+WHERE idTerreno = 1;
+
+
+-- Tabella 'rilevazioni'
+CREATE TABLE rilevazioni (
+    idTerreno INT NOT NULL,
+    data DATE NOT NULL,
+    PH DECIMAL(5,2) NOT NULL,
+    perc_umidita DECIMAL(5,2) NOT NULL,
+    perc_sostanzaOrganica DECIMAL(5,2) NOT NULL,
+    perc_azoto DECIMAL(5,2) NOT NULL,
+    infestazione VARCHAR(255),
+    PRIMARY KEY (idTerreno, data),
+    FOREIGN KEY (idTerreno) REFERENCES terreni(idTerreno),
+    FOREIGN KEY (infestazione) REFERENCES infestanti(nome_infestante)
+);
+
+INSERT INTO rilevazioni (idTerreno, data, PH, perc_umidita, perc_sostanzaOrganica, Perc_azoto, infestazione)
+VALUES
+    (1, '2023-07-01', 6.5, 10.0, 2.5, 0.8, 'Cipero'),
+    (2, '2023-08-01', 6.0, 15.0, 3.0, 0.9, 'Cipero'),
+    (3, '2023-09-01', 5.8, 12.0, 2.8, 0.7, NULL),
+    (4, '2023-10-01', 6.2, 18.0, 3.5, 1.0, NULL),
+    (5, '2023-11-01', 6.3, 14.0, 3.2, 0.9, NULL);

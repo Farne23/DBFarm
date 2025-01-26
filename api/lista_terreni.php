@@ -1,19 +1,21 @@
 <?php
 
-$inputData = json_decode(file_get_contents('php://input'), true);
+// $inputData = json_decode(file_get_contents('php://input'), true);
 
-// Controlla se i parametri sono settati
-if (isset($inputData['tipologia']) && isset($inputData['semovente'])) {
-    require_once '../bootstrap.php';
-    $macchinari = $dbh->getMacchinariListFiltered($inputData['tipologia'], $inputData['semovente']);
-} else {
-    if (file_exists('../bootstrap.php')) {
-        require_once '../bootstrap.php';
-    } else {
-        require_once 'bootstrap.php';
-    }
-    $macchinari = $dbh->getMacchinariList();
-}
+// // Controlla se i parametri sono settati
+// if (isset($inputData['tipologia']) && isset($inputData['semovente'])) {
+//     require_once '../bootstrap.php';
+//     $macchinari = $dbh->getMacchinariListFiltered($inputData['tipologia'], $inputData['semovente']);
+// } else {
+//     if (file_exists('../bootstrap.php')) {
+//         require_once '../bootstrap.php';
+//     } else {
+//         require_once 'bootstrap.php';
+//     }
+//     $macchinari = $dbh->getMacchinariList();
+// }
+require_once '../bootstrap.php';
+$terreni = $dbh->getListaTerreni();
 ?>
 <ul>
     <?php

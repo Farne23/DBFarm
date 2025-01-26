@@ -185,7 +185,7 @@ main > section > ul > li > div:first-of-type{
 
 .input-line {
     display: flex; 
-    gap: 20px;
+    gap: 5px;
     align-items: flex-start;
     border: 1px solid #A24936;
 }

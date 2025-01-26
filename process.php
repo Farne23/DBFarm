@@ -65,6 +65,14 @@ try {
                 echo json_encode(['success' => false]);
             }
             break;
+        case "newTerreno":
+            // Verifica se il terreno è stato registrato correttamente
+            if ($dbh->registraNuovoTerreno($data['nome'], $data['superficie'], $data['limo'], $data['sabbia'], $data['argilla'], $data['granulometria'], $data['comune'], $data['particella'], $data['sezione'])) {
+                echo json_encode(['success' => true]);
+            } else {
+                echo json_encode(['success' => false]);
+            }
+            break;
     }
 } catch (Exception $e) {
     // Gestisci eventuali errori
