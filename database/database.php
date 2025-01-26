@@ -184,7 +184,7 @@ class DatabaseHelper
 
     function getMacchinariList()
     {
-        $stmt = $this->db->prepare("SELECT macchinari.*, GROUP_CONCAT(CONCAT(nome_caratteristica, ': ', valore) SEPARATOR ', ') AS caratteristiche FROM specifiche_caratteristiche INNER JOIN macchinari on specifiche_caratteristiche.idMacchinario = macchinari.idMacchinario GROUP BY specifiche_caratteristiche.idMacchinario");
+        $stmt = $this->db->prepare("SELECT macchinari.*, GROUP_CONCAT(CONCAT(nome_caratteristica, ': ', valore) SEPARATOR ', ') AS caratteristiche FROM specifiche_caratteristiche RIGHT JOIN macchinari on specifiche_caratteristiche.idMacchinario = macchinari.idMacchinario GROUP BY macchinari.idMacchinario");
         $stmt->execute();
         $result = $stmt->get_result();
         return $result->fetch_all(MYSQLI_ASSOC);
@@ -197,23 +197,23 @@ class DatabaseHelper
                 if ($tipologia == "qualsiasi") {
                     return $this->getMacchinariList();
                 } else {
-                    $stmt = $this->db->prepare("SELECT macchinari.*, GROUP_CONCAT(CONCAT(nome_caratteristica, ': ', valore) SEPARATOR ', ') AS caratteristiche FROM specifiche_caratteristiche INNER JOIN macchinari on specifiche_caratteristiche.idMacchinario = macchinari.idMacchinario WHERE tipologia = ? GROUP BY specifiche_caratteristiche.idMacchinario");
+                    $stmt = $this->db->prepare("SELECT macchinari.*, GROUP_CONCAT(CONCAT(nome_caratteristica, ': ', valore) SEPARATOR ', ') AS caratteristiche FROM specifiche_caratteristiche RIGHT  JOIN macchinari on specifiche_caratteristiche.idMacchinario = macchinari.idMacchinario WHERE tipologia = ? GROUP BY macchinari.idMacchinario");
                     $stmt->bind_param("s", $tipologia);
                 }
                 break;
             case "semoventeSi":
                 if ($tipologia == "qualsiasi") {
-                    $stmt = $this->db->prepare("SELECT macchinari.*, GROUP_CONCAT(CONCAT(nome_caratteristica, ': ', valore) SEPARATOR ', ') AS caratteristiche FROM specifiche_caratteristiche INNER JOIN macchinari on specifiche_caratteristiche.idMacchinario = macchinari.idMacchinario WHERE semovente=true GROUP BY specifiche_caratteristiche.idMacchinario");
+                    $stmt = $this->db->prepare("SELECT macchinari.*, GROUP_CONCAT(CONCAT(nome_caratteristica, ': ', valore) SEPARATOR ', ') AS caratteristiche FROM specifiche_caratteristiche RIGHT  JOIN macchinari on specifiche_caratteristiche.idMacchinario = macchinari.idMacchinario WHERE semovente=true GROUP BY macchinari.idMacchinario");
                 } else {
-                    $stmt = $this->db->prepare("SELECT macchinari.*, GROUP_CONCAT(CONCAT(nome_caratteristica, ': ', valore) SEPARATOR ', ') AS caratteristiche FROM specifiche_caratteristiche INNER JOIN macchinari on specifiche_caratteristiche.idMacchinario = macchinari.idMacchinario WHERE semovente=true AND tipologia = ? GROUP BY specifiche_caratteristiche.idMacchinario");
+                    $stmt = $this->db->prepare("SELECT macchinari.*, GROUP_CONCAT(CONCAT(nome_caratteristica, ': ', valore) SEPARATOR ', ') AS caratteristiche FROM specifiche_caratteristiche RIGHT  JOIN macchinari on specifiche_caratteristiche.idMacchinario = macchinari.idMacchinario WHERE semovente=true AND tipologia = ? GROUP BY macchinari.idMacchinario");
                     $stmt->bind_param("s", $tipologia);
                 }
                 break;
             case "semoventeNo":
                 if ($tipologia == "qualsiasi") {
-                    $stmt = $this->db->prepare("SELECT macchinari.*, GROUP_CONCAT(CONCAT(nome_caratteristica, ': ', valore) SEPARATOR ', ') AS caratteristiche FROM specifiche_caratteristiche INNER JOIN macchinari on specifiche_caratteristiche.idMacchinario = macchinari.idMacchinario WHERE semovente=false GROUP BY specifiche_caratteristiche.idMacchinario");
+                    $stmt = $this->db->prepare("SELECT macchinari.*, GROUP_CONCAT(CONCAT(nome_caratteristica, ': ', valore) SEPARATOR ', ') AS caratteristiche FROM specifiche_caratteristiche RIGHT JOIN macchinari on specifiche_caratteristiche.idMacchinario = macchinari.idMacchinario WHERE semovente=false GROUP BY macchinari.idMacchinario");
                 } else {
-                    $stmt = $this->db->prepare("SELECT macchinari.*, GROUP_CONCAT(CONCAT(nome_caratteristica, ': ', valore) SEPARATOR ', ') AS caratteristiche FROM specifiche_caratteristiche INNER JOIN macchinari on specifiche_caratteristiche.idMacchinario = macchinari.idMacchinario WHERE semovente=false AND tipologia = ? GROUP BY specifiche_caratteristiche.idMacchinario");
+                    $stmt = $this->db->prepare("SELECT macchinari.*, GROUP_CONCAT(CONCAT(nome_caratteristica, ': ', valore) SEPARATOR ', ') AS caratteristiche FROM specifiche_caratteristiche RIGHT JOIN macchinari on specifiche_caratteristiche.idMacchinario = macchinari.idMacchinario WHERE semovente=false AND tipologia = ? GROUP BY macchinari.idMacchinario");
                     $stmt->bind_param("s", $tipologia);
                 }
                 break;
@@ -245,6 +245,58 @@ class DatabaseHelper
             $row['caratteristiche'] = $this->getCratteristicheDellaTipologia($tipologia);
         }
         return $resultBase;
+    }
+
+    public function registraMezzoSemovente($tipologia, $marca, $modello, $costo_orario, $potenza, $telaio, $volume, $targa)
+    {
+        $stmt = $this->db->prepare("INSERT INTO macchinari (semovente, tipologia, marca, modello, costo_orario, potenza, telaio, volume,targa)
+                VALUES (true, ?, ?, ?, ?, ?, ?,?)");
+        $stmt->bind_param("ssssss", $tipologia, $marca, $modello, $costo_orario, $potenza, $telaio, $volume, $targa);
+        if ($stmt->execute()) {
+            return $this->db->insert_id;
+        } else {
+            return false;
+        }
+    }
+
+    public function registraAttrezzo($tipologia, $marca, $modello, $costo_orario)
+    {
+        $stmt = $this->db->prepare("INSERT INTO macchinari (semovente,tipologia, marca, modello, costo_orario)
+                VALUES (true,?, ?, ?, ?)");
+        $stmt->bind_param("ssss", $tipologia, $marca, $modello, $costo_orario);
+        if ($stmt->execute()) {
+            return $this->db->insert_id;
+        } else {
+            return false;
+        }
+    }
+
+    public function registraNuovoValore($idMacchinario, $specifica, $valore)
+    {
+        $stmt = $this->db->prepare("SELECT * 
+        FROM caratteristiche_macchinari 
+        INNER JOIN attinenze_caratteristiche ON caratteristiche_macchinari.nome_caratteristica = attinenze_caratteristiche.nome_caratteristica 
+        INNER JOIN macchinari ON macchinari.tipologia = attinenze_caratteristiche.nome_tipologia
+        WHERE caratteristiche_macchinari.nome_caratteristica = ?
+        AND macchinari.idMacchinario = ?");
+        $stmt->bind_param("si", $specifica, $idMacchinario);
+        $stmt->execute();
+        $result = $stmt->get_result();
+
+        if ($result->num_rows > 0) {
+            $stmt = $this->db->prepare("
+                INSERT INTO specifiche_caratteristiche (idMacchinario, nome_caratteristica, valore) 
+                VALUES (?, ?, ?)");
+            $stmt->bind_param("iss", $idMacchinario, $specifica, $valore);
+
+            if ($stmt->execute()) {
+                return true;
+            } else {
+                return false;
+            }
+        } else {
+            return false;
+        }
     }
 }
 ?>

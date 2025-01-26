@@ -5,9 +5,13 @@ $inputData = json_decode(file_get_contents('php://input'), true);
 // Controlla se i parametri sono settati
 if (isset($inputData['tipologia']) && isset($inputData['semovente'])) {
     require_once '../bootstrap.php';
-    $macchinari = $dbh->getMacchinariListFiltered($inputData['tipologia'],$inputData['semovente']);
+    $macchinari = $dbh->getMacchinariListFiltered($inputData['tipologia'], $inputData['semovente']);
 } else {
-    require_once 'bootstrap.php';
+    if (file_exists('../bootstrap.php')) {
+        require_once '../bootstrap.php';
+    } else {
+        require_once 'bootstrap.php';
+    }
     $macchinari = $dbh->getMacchinariList();
 }
 ?>
@@ -25,7 +29,9 @@ if (isset($inputData['tipologia']) && isset($inputData['semovente'])) {
         if (!empty($macchinario['serbatoio'])) {
             echo "<li><strong>Serbatoio:</strong> " . htmlspecialchars($macchinario['serbatoio']) . " litri</li>";
         }
-        echo "<li><strong>Caratteristiche:</strong> " . htmlspecialchars($macchinario['caratteristiche']) . "</li>";
+        if (!empty($macchinario['caratteristiche'])) {
+            echo "<li><strong>Caratteristiche:</strong> " . htmlspecialchars($macchinario['caratteristiche']) . "</li>";
+        }
         echo "</ul>";
         echo "</li>";
     }

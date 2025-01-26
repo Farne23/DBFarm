@@ -379,11 +379,11 @@ VALUES
 
 INSERT INTO macchinari (Tipologia, marca, modello, costo_orario, telaio, potenza, targa, serbatoio, semovente)
 VALUES 
-('Irroratrice', 'John Deere', 'R4045', 30.00, 'JD001', NULL, NULL, NULL, FALSE),
-('Seminatrice', 'Kuhn', 'ESPRO 6000', 20.00, 'KUHN001', NULL, NULL,NULL, FALSE),
-('Spandiconcime', 'Amazone', 'ZA-TS', 15.00, 'AMAZONE001', NULL, NULL, NULL, FALSE),
-('Aratro', 'Lemken', 'Diamant 16', 18.00, 'LEMKEN001', NULL, NULL, NULL, FALSE),
-('Erpice', 'Maschio Gaspardo', 'Dominator 630', 22.00, 'MASCHIO001', NULL, NULL, NULL, FALSE);
+('Irroratrice', 'John Deere', 'R4045', 30.00, NULL, NULL, NULL, NULL, FALSE),
+('Seminatrice', 'Kuhn', 'ESPRO 6000', 20.00, NULL, NULL, NULL,NULL, FALSE),
+('Spandiconcime', 'Amazone', 'ZA-TS', 15.00, NULL, NULL, NULL, NULL, FALSE),
+('Aratro', 'Lemken', 'Diamant 16', 18.00, NULL, NULL, NULL, NULL, FALSE),
+('Erpice', 'Maschio Gaspardo', 'Dominator 630', 22.00, NULL, NULL, NULL, NULL, FALSE);
 
 INSERT INTO caratteristiche_macchinari (nome_caratteristica, descrizione)
 VALUES 

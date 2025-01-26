@@ -21,10 +21,9 @@ document.getElementById('filtraMacchinari').addEventListener('submit', async fun
     }
 });
 
-document.getElementById('tipologiaInserimento').addEventListener('change', async function() {
-    const tipologia = this.value; 
-    console.log(tipologia);
-    
+document.getElementById('tipologiaInserimento').addEventListener('change', async function () {
+    const tipologia = this.value;
+
     // Invia una richiesta all'API per ottenere le caratteristiche associate
     try {
         const response = await fetch('api/caratteristiche-associate.php', {
@@ -35,7 +34,6 @@ document.getElementById('tipologiaInserimento').addEventListener('change', async
             body: JSON.stringify({ tipologia: tipologia }), // Passa la tipologia nel body della richiesta
         });
 
-        console.log(await response.text());
         const result = await response.json();
 
         if (result.success) {
@@ -47,18 +45,17 @@ document.getElementById('tipologiaInserimento').addEventListener('change', async
             result.caratteristiche.forEach(caratteristica => {
                 // Crea un <li> per ogni caratteristica
                 const liElement = document.createElement('li');
-                
+
                 // Crea il label per la caratteristica
                 const labelElement = document.createElement('label');
                 labelElement.setAttribute('for', caratteristica.nome_caratteristica);
                 labelElement.textContent = capitalizeFirstLetter(caratteristica.nome_caratteristica); // Capitalizza la prima lettera
-                
+
                 // Crea l'input per la caratteristica
                 const inputElement = document.createElement('input');
                 inputElement.type = 'text';
                 inputElement.id = caratteristica.nome_caratteristica;
                 inputElement.name = caratteristica.nome_caratteristica;
-                inputElement.placeholder = 'Inserisci ' + caratteristica.nome_caratteristica;
                 inputElement.required = true;
 
                 // Aggiungi il label e l'input all'elemento <li>
@@ -80,7 +77,90 @@ document.getElementById('tipologiaInserimento').addEventListener('change', async
     }
 });
 
+document.getElementById('semovente').addEventListener('change', async function () {
+    document.getElementById('caratteristiche-semovente').classList.toggle("hidden");
+    const inputs = document.querySelectorAll('#caratteristiche-semovente input[type="text"]');
+
+    inputs.forEach(input => {
+        if (input.id != "targa") {
+            input.required = !input.required;
+        }
+    });
+});
+
 // Funzione per capitalizzare la prima lettera di una stringa
 function capitalizeFirstLetter(string) {
     return string.charAt(0).toUpperCase() + string.slice(1);
 }
+
+
+document.getElementById('formMacchinario').addEventListener('submit', async function (event) {
+    event.preventDefault();
+    const data = {
+        type: "registraMacchinario",
+        tipologia: document.getElementById('tipologiaInserimento').value,
+        semovente: document.getElementById('semovente').value,
+        marca: document.getElementById('marca').value,
+        modello: document.getElementById('modello').value,
+        costo_orario: document.getElementById('costo_orario').value,
+        potenza: document.getElementById('potenza').value,
+        telaio: document.getElementById('telaio').value,
+        volume: document.getElementById('volume').value,
+        targa: document.getElementById('targa').value
+    };
+
+    // Invia i dati al server tramite Fetch
+    try {
+        const response = await fetch('process.php', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(data),
+        });
+        const result = await response.json();
+        if (result && result["success"]) {
+            const a = document.querySelectorAll('#caratteristiche-associate  input');
+            a.forEach(async function (input) {
+
+                const data = {
+                    type: "specificaValore",
+                    idMacchinario: result['id'],
+                    specifica: input.id,
+                    valore: input.value
+                };
+
+                try {
+                    const response = await fetch('process.php', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify(data),
+                    });
+                    const result = await response.text();
+                }catch(error){
+                    console.error('Errore durante la richiesta:', error);
+                }
+            })
+        }
+    } catch (error) {
+        console.error('Errore durante la richiesta:', error);
+    }
+
+
+    try {
+        const response = await fetch('api/lista-macchinari.php', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            //body: JSON.stringify(data),
+        });
+
+        const result = await response.text();
+        document.getElementById('listaMacchinari').innerHTML = result;
+    } catch (error) {
+        console.error('Errore durante la richiesta:', error);
+    }
+});

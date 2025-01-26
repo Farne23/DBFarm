@@ -174,8 +174,8 @@ main > section > ul > li > div:first-of-type{
 }
 
 .white-on-orange{
-    background-color: #A24936;
-    color: white;
+    background-color: white;
+    color: #A24936;
 }
 
 .orange-on-white{
@@ -230,7 +230,7 @@ main > section > ul > li > div:first-of-type{
     margin-left: auto;
 }
 
-.input-group input[type="submit"] {
+.input-group input[type="submit"], #formMacchinario button[type="submit"]{
     border: none;
     cursor: pointer;
     padding: 8px 12px;
@@ -291,4 +291,38 @@ a{
     display: flex;
     padding: 2px 2px 2px 5px;
     margin-top: 10px;
+}
+
+#formMacchinario{
+    background-color: #A24936;
+    color: white;
+    display: flex;
+    flex-direction: column;
+    flex-wrap: wrap;
+}
+
+#formMacchinario > *{ 
+    margin: 10px;
+    width: 40%;
+    box-sizing: border-box;
+    font-size: 12px;
+}
+
+#formMacchinario > div > ul{ 
+    display: flex;
+    flex-wrap: wrap;
+}
+
+#formMacchinario > div >ul>li{ 
+    margin: 10px;
+    width: 60%;
+    box-sizing: border-box;
+    font-size: 12px;
+    display: flex;
+    flex-direction: column;
+}
+
+#formMacchinario > div >ul>li { 
+    padding: 5px;
+    margin-bottom: 10px;
 }

@@ -25,6 +25,46 @@ try {
                 echo json_encode(['success' => false]);
             }
             break;
+        case "registraMacchinario":
+            if ($data['semovente']) {
+                $id = $dbh->registraMezzoSemovente(
+                    $data['tipologia'],
+                    $data['marca'],
+                    $data['modello'],
+                    $data['costo_orario'],
+                    $data['potenza'],
+                    $data['telaio'],
+                    $data['volume'],
+                    $data['targa']
+                );
+
+                if ($id) {
+                    echo json_encode(['success' => true, 'id' => $id]);
+                } else {
+                    echo json_encode(['success' => false]);
+                }
+            } else {
+                $id = $dbh->registraAttrezzo(
+                    $data['tipologia'],
+                    $data['marca'],
+                    $data['modello'],
+                    $data['costo_orario']
+                );
+
+                if ($id) {
+                    echo json_encode(['success' => true, 'id' => $id]);
+                } else {
+                    echo json_encode(['success' => false]);
+                }
+            }
+            break;
+        case "specificaValore":
+            if ($dbh->registraNuovoValore($data['idMacchinario'], $data['specifica'], $data['valore'])) {
+                echo json_encode(['success' => true]);
+            } else {
+                echo json_encode(['success' => false]);
+            }
+            break;
     }
 } catch (Exception $e) {
     // Gestisci eventuali errori
