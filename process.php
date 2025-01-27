@@ -73,6 +73,13 @@ try {
                 echo json_encode(['success' => false]);
             }
             break;
+        case "newCiclo":
+            if ($dbh->registraNuovoCiclo($data['terreno'], $data['coltura'], $data['inizio'])) {
+                echo json_encode(['success' => true]);
+            } else {
+                echo json_encode(['success' => false]);
+            }
+            break;
     }
 } catch (Exception $e) {
     // Gestisci eventuali errori

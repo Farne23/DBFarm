@@ -6,9 +6,9 @@ document.getElementById('newTerrenoForm').addEventListener('submit', async funct
         type: "newTerreno",
         nome: document.getElementById('nomeNewTerreno').value,
         superficie: parseFloat(document.getElementById('superficieNewTerreno').value),
-        percLimo: parseFloat(document.getElementById('limo').value),
-        percSabbia: parseFloat(document.getElementById('sabbia').value),
-        percArgilla: parseFloat(document.getElementById('argilla').value),
+        limo: parseFloat(document.getElementById('limo').value),
+        sabbia: parseFloat(document.getElementById('sabbia').value),
+        argilla: parseFloat(document.getElementById('argilla').value),
         comune: document.getElementById('comune').value,
         particella: document.getElementById('particella').value,
         sezione: document.getElementById('sezione').value,
@@ -46,7 +46,7 @@ document.getElementById('newTerrenoForm').addEventListener('submit', async funct
             fetch('api/lista-terreni.php')
                 .then(response => response.text())
                 .then(data => {
-                    document.getElementById('listaTerreni').innerHTML = data;
+                    document.getElementById('terreniLavorati').innerHTML = data;
                 })
                 .catch(error => {
                     console.error('Errore nel caricare la lista terreni:', error);

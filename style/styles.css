@@ -52,6 +52,7 @@ nav > ul > li{
     font-size: 16px;
     width: 90px;
     padding: 9px;
+    cursor: pointer;
 }
 
 main{
@@ -325,4 +326,71 @@ a{
 #formMacchinario > div >ul>li { 
     padding: 5px;
     margin-bottom: 10px;
+}
+
+.terreni-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+/* Stile per ogni elemento della lista */
+.terreni-list li {
+    border: 1px solid black;
+    margin: 10px 0;
+    background-color: #fff;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    transition: transform 0.2s, box-shadow 0.2s;
+    cursor: pointer;
+}
+
+.terreni-list li:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 6px 8px rgba(0, 0, 0, 0.2);
+}
+
+/* Stile per la prima riga: ID e nome */
+.terreno-header {
+    padding: 10px;
+    font-size: 18px;
+    margin-bottom: 10px;
+}
+
+/* Stile per le altre righe */
+.terreno-details {
+    color: #333;
+    font-size: 14px;
+    margin: 5px 0;
+    padding: 5px;
+}
+
+/* Stile per i dettagli (etichette) */
+.terreno-details span {
+    font-weight: bold;
+    color: #555;
+}
+
+/* Rendere l'intero elemento cliccabile */
+.terreni-list li {
+    text-decoration: none;
+}
+
+.positive{
+    color: green; 
+}
+
+.negative{
+    color: red;
+}
+
+.simpletable td{
+    padding: 10px;
+}
+
+h2{
+    padding: 10px;
+}
+
+h4{
+    margin-left: 10px;
 }

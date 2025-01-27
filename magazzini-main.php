@@ -2,6 +2,7 @@
 require_once 'bootstrap.php';
 $Magazzini = $dbh->getMagazziniListComplete();
 $Prodotti = $dbh->getListaProdotti();
+$Colture = $dbh->getColture();
 ?>
 
 <h3>

@@ -64,14 +64,12 @@ $Granulometrie = $dbh->getGranulometrie();
         </div>
     </form>
 
-    <h3>
-        Terreni registrati
-    </h3>
+    <h2>
+        Terreni
+    </h2>
 </section>
-<section id="listaOperatori">
-    <ul>
-        <?php
-        echo createListaOperatori($Operatori);
-        ?>
-    </ul>
+<section id="terreniLavorati">
+    <?php
+        include 'api/lista-terreni.php';
+    ?>
 </section>

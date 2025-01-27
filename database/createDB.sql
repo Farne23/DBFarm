@@ -521,13 +521,14 @@ VALUES
 -- Tabella 'terreni'
 CREATE TABLE terreni (
     idTerreno INT AUTO_INCREMENT PRIMARY KEY,
-    nome VARCHAR(255) UNIQUE NOT NULL,
+    nome VARCHAR(255) UNIQUE,
     superficie DECIMAL(10,2) NOT NULL,
     perc_limo DECIMAL(5,2) NOT NULL,
     perc_sabbia DECIMAL(5,2) NOT NULL,
     perc_argilla DECIMAL(5,2) NOT NULL,
     granulometria VARCHAR(255) NOT NULL,
-    ultima_lavorazione VARCHAR(255),
+    idCicloProduttivo INT ,
+    numero_lavorazione INT,
     FOREIGN KEY (granulometria) REFERENCES granulometrie(nome_granulometria)
 );
 
@@ -602,21 +603,27 @@ VALUES
 -- Tabella 'lavorazioni'
 CREATE TABLE lavorazioni (
     idCicloProduttivo INT NOT NULL,
-    numero INT NOT NULL,
+    numero_lavorazione INT NOT NULL,
     categoria VARCHAR(255) NOT NULL,
     data_inizio DATE NOT NULL,
     data_fine DATE,
-    PRIMARY KEY (idCicloProduttivo, numero),
+    PRIMARY KEY (idCicloProduttivo, numero_lavorazione),
     FOREIGN KEY (idCicloProduttivo) REFERENCES cicli_produttivi(idCicloProduttivo),
     FOREIGN KEY (categoria) REFERENCES categorie_lavorazioni(nome_categoria)
 );
 
-INSERT INTO lavorazioni (idCicloProduttivo,numero,categoria,data_inizio)
+ALTER TABLE terreni
+ADD FOREIGN KEY (idCicloProduttivo, numero_lavorazione)
+REFERENCES lavorazioni(idCicloProduttivo, numero_lavorazione);
+
+INSERT INTO lavorazioni (idCicloProduttivo,numero_lavorazione,categoria,data_inizio)
 VALUES
 (3,1,"Aratura", '2024-10-01');
 
 UPDATE terreni
-SET ultima_lavorazione = 1
+SET 
+    idCicloProduttivo = 3,
+    numero_lavorazione = 1
 WHERE idTerreno = 1;
 
 
