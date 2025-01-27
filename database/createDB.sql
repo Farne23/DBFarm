@@ -648,3 +648,17 @@ VALUES
     (3, '2023-09-01', 5.8, 12.0, 2.8, 0.7, NULL),
     (4, '2023-10-01', 6.2, 18.0, 3.5, 1.0, NULL),
     (5, '2023-11-01', 6.3, 14.0, 3.2, 0.9, NULL);
+
+    CREATE TABLE rilevazioni (
+    data DATE NOT NULL,
+    idTerreno INT NOT NULL,
+    Ph DECIMAL(4, 2) NOT NULL,
+    perc_umidita DECIMAL(5, 2) NOT NULL,
+    perc_sosOrganica DECIMAL(5, 2) NOT NULL,
+    perc_azoto DECIMAL(5, 2) NOT NULL,
+    idInfestante INT,
+    PRIMARY KEY (data, idTerreno),
+    UNIQUE (data, idTerreno),
+    FOREIGN KEY (idTerreno) REFERENCES terreni(idTerreno),
+    FOREIGN KEY (idInfestante) REFERENCES infestanti(idInfestante) 
+);

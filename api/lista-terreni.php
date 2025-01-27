@@ -30,14 +30,12 @@ $terreniIncolti = $dbh->getListaTerreniIncolti();
                 <strong>[<?= htmlspecialchars($terreno['idTerreno']) ?>] <?= htmlspecialchars($terreno['nome']) ?></strong>
             </div>
             <div class="terreno-details">
-                <span>Ultimo Ciclo Produttivo:</span> 
-                <?= htmlspecialchars($terreno['coltura_coltivata']) ?>,  
-                <?= htmlspecialchars($terreno['stato ciclo produttivo']) ?>
-            </div>
-            <div class="terreno-details">
                 <span>Ultima Lavorazione:</span> 
-                <?= htmlspecialchars($terreno['categoria']) ?>,  
-                <?= htmlspecialchars($terreno['stato lavorazione']) ?>
+                <?= htmlspecialchars($terreno['categoria']) ?> 
+                <?= htmlspecialchars($terreno['coltura_coltivata']) ?>
+                (<?= htmlspecialchars($terreno['stato lavorazione']) ?>)
+                per Ciclo Produttivo # <?= htmlspecialchars($terreno['idCicloProduttivo']) ?>
+                (<?= htmlspecialchars($terreno['stato ciclo produttivo']) ?>) :
             </div>
         </li>
     <?php endforeach; ?>

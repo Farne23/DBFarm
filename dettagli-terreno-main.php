@@ -54,7 +54,10 @@ $Colture = $dbh->getColture();
         <li onclick="location.href='dettagli-ciclo.php?id=<?= htmlspecialchars($ciclo['idCicloProduttivo']) ?>'">
             <div class="terreno-header orange-on-white">
                 <strong>[<?= htmlspecialchars($ciclo['idCicloProduttivo']) ?>] Coltivato :
-                    <?= htmlspecialchars($ciclo['coltura_coltivata']) ?></strong>
+                    <?= htmlspecialchars($ciclo['coltura_coltivata']) ?>
+                    <?php 
+                        echo "(" . htmlspecialchars($ciclo['possesso']) .")";
+                     ?></strong>
             </div>
             <div class="terreno-details">
                 <span>Inizio:</span>
@@ -90,7 +93,7 @@ $Colture = $dbh->getColture();
                 <label for="terrenoNewCiclo">Coltura</label>
                 <select id="terrenoNewCiclo">
                     <?php
-                        echo '<option value="' . $idTerreno . '" selected="selected">Ciclo ' . $idTerreno . '</option>;';
+                    echo '<option value="' . $idTerreno . '" selected="selected">Ciclo ' . $idTerreno . '</option>;';
                     ?>
                 </select>
             </div>
@@ -109,6 +112,15 @@ $Colture = $dbh->getColture();
                 <input id="dataInizio" type="date" required />
             </div>
             <div class="input-group">
+                <label for="costoNewCiclo">Costo (Affitto)</label>
+                <input id="costoNewCiclo" type="number" min="1" step="1" />
+            </div>
+
+            <div class="input-group">
+                <label for="proprietario">Proprietario</label>
+                <input id="proprietario" type="text" minlength="2" maxlength="50" pattern="[A-Za-z\s]+" />
+            </div>
+            <div class="input-group">
                 <input id="recordNewCiclo" type="submit" value="Registra" class="orange-on-white" />
             </div>
         </div>
@@ -119,5 +131,5 @@ $Colture = $dbh->getColture();
     <h3>
         Registra una nuova rilevazione
     </h3>
-   
+
 <?php endif; ?>

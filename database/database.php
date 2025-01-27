@@ -329,6 +329,7 @@ class DatabaseHelper
             terreni.nome, 
             lavorazioni.categoria, 
             cicli_produttivi.coltura_coltivata,
+            lavorazioni.idCicloProduttivo,
             IF(lavorazioni.data_fine IS NULL, 'In corso', 'Completata') AS 'stato lavorazione',
             IF(cicli_produttivi.data_fine IS NULL, 'in corso', 'Completato') AS 'stato ciclo produttivo'
         FROM 
@@ -361,31 +362,35 @@ class DatabaseHelper
         return $result->fetch_all(MYSQLI_ASSOC);
     }
 
-    public function getCicliProduttiviDi($id){
-        $stmt = $this->db->prepare("SELECT * FROM cicli_produttivi WHERE idTerreno = ? ORDER BY data_inizio DESC");
+    public function getCicliProduttiviDi($id)
+    {
+        $stmt = $this->db->prepare("SELECT idCicloProduttivo,coltura_coltivata,data_inizio,data_fine,bilancio,IF(ISNULL(costo),'Posseduto','Affittato') as 'possesso' FROM cicli_produttivi WHERE idTerreno = ? ORDER BY data_inizio DESC");
         $stmt->bind_param("s", $id);
         $stmt->execute();
         $result = $stmt->get_result();
         return $result->fetch_all(MYSQLI_ASSOC);
-    }   
+    }
 
-    public function getDatiCatsataliDi($id){
+    public function getDatiCatsataliDi($id)
+    {
         $stmt = $this->db->prepare("SELECT * FROM dati_catastali WHERE idTerreno = ?");
         $stmt->bind_param("s", $id);
         $stmt->execute();
         $result = $stmt->get_result();
         return $result->fetch_all(MYSQLI_ASSOC);
-    }  
-    
-    public function getDatiDi($id){
+    }
+
+    public function getDatiDi($id)
+    {
         $stmt = $this->db->prepare("SELECT * FROM terreni WHERE idTerreno = ?");
         $stmt->bind_param("s", $id);
         $stmt->execute();
         $result = $stmt->get_result();
         return $result->fetch_all(MYSQLI_ASSOC);
-    }   
+    }
 
-    public function readyNuovoCiclo($id){
+    public function readyNuovoCiclo($id)
+    {
         $stmt = $this->db->prepare("SELECT COUNT(*) = 0 AS pronto
             FROM cicli_produttivi
             WHERE idTerreno = ? AND data_fine IS NULL;");
@@ -393,20 +398,44 @@ class DatabaseHelper
         $stmt->execute();
         $result = $stmt->get_result();
         return $result->fetch_all(MYSQLI_ASSOC);
-    }   
+    }
 
-    public function getColture(){
+    public function getColture()
+    {
         $stmt = $this->db->prepare("SELECT nome_coltura, mese_semina, ABS(MONTH(CURDATE()) - mese_semina) as 'differenza' FROM colture ORDER BY differenza ");
         $stmt->execute();
         $result = $stmt->get_result();
         return $result->fetch_all(MYSQLI_ASSOC);
     }
 
-    public function registraNuovoCiclo($idTerreno,$coltura,$datainizio){
-        $stmt = $this->db->prepare("INSERT INTO cicli_produttivi (idTerreno, coltura_coltivata,data_inizio) 
-                                    VALUES (?, ?, ?)");
+    public function registraNuovoCiclo($idTerreno, $coltura, $datainizio, $costo, $proprietario)
+    {
+        // Query per verificare che la data di inizio non sia inferiore alla data di fine di nessun ciclo esistente
+        $stmt = $this->db->prepare("
+            SELECT COUNT(*) AS count 
+            FROM cicli_produttivi 
+            WHERE idTerreno = ? AND data_fine IS NOT NULL AND data_fine > ?"
+        );
+        $stmt->bind_param("is", $idTerreno, $datainizio);
+        $stmt->execute();
+        $checkResult = $stmt->get_result();
+        $row = $checkResult->fetch_assoc();
+
+        if ($row['count'] > 0) {
+            return false;
+        }
+
+        if ($costo == "" || $proprietario == "") {
+            $stmt = $this->db->prepare("INSERT INTO cicli_produttivi (idTerreno, coltura_coltivata, data_inizio) 
+                                        VALUES (?, ?, ?)");
             $stmt->bind_param("iss", $idTerreno, $coltura, $datainizio);
-            return $stmt->execute();
+        } else {
+            $stmt = $this->db->prepare("INSERT INTO cicli_produttivi (idTerreno, coltura_coltivata, data_inizio, costo, proprietario) 
+                                        VALUES (?, ?, ?, ?, ?)");
+            $stmt->bind_param("issds", $idTerreno, $coltura, $datainizio, $costo, $proprietario);
+        }
+
+        return $stmt->execute();
     }
 }
 ?>

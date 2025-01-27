@@ -74,7 +74,7 @@ try {
             }
             break;
         case "newCiclo":
-            if ($dbh->registraNuovoCiclo($data['terreno'], $data['coltura'], $data['inizio'])) {
+            if ($dbh->registraNuovoCiclo($data['terreno'], $data['coltura'], $data['inizio'],$data['costo'],$data['proprietario'])) {
                 echo json_encode(['success' => true]);
             } else {
                 echo json_encode(['success' => false]);

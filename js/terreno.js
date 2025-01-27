@@ -6,6 +6,8 @@ document.getElementById('newCicloForm').addEventListener('submit', async functio
         terreno: document.getElementById('terrenoNewCiclo').value,
         coltura: document.getElementById('colturaNewCiclo').value,
         inizio: document.getElementById('dataInizio').value,
+        costo : document.getElementById('costoNewCiclo').value,
+        proprietario : document.getElementById('proprietario').value
     };
 
     document.getElementById('dataInizio').value = '';
