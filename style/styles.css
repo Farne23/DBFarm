@@ -394,3 +394,34 @@ h2{
 h4{
     margin-left: 10px;
 }
+
+
+/* Stili di base per la visualizzazione dei dati */
+.campo-rilevazione {
+    background-color: #f9f9f9;
+    border: 1px solid #A24936;
+    padding: 10px;
+    margin: 10px 0;
+    border-radius: 5px;
+}
+
+.campo-rilevazione p {
+    margin: 5px 0;
+    font-size: 16px;
+}
+
+.campo-rilevazione strong {
+    color: black;
+}
+
+.alert {
+    padding: 10px;
+    margin: 10px 0;
+    border-radius: 5px;
+}
+
+.alert-warning {
+    background-color: #ab7062;
+    border: 2px solid #A24936;
+    color: white;
+}

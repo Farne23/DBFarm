@@ -74,7 +74,17 @@ try {
             }
             break;
         case "newCiclo":
-            if ($dbh->registraNuovoCiclo($data['terreno'], $data['coltura'], $data['inizio'],$data['costo'],$data['proprietario'])) {
+            if ($dbh->registraNuovoCiclo($data['terreno'], $data['coltura'], $data['inizio'], $data['costo'], $data['proprietario'])) {
+                echo json_encode(['success' => true]);
+            } else {
+                echo json_encode(['success' => false]);
+            }
+            break;
+        case "newRilevazione":
+            if (
+                $dbh->registraNuovaRilevazione($data['idTerreno'],$data['ph'],$data['umidita'],$data['sostanzaOrganica'],$data['azoto'],$data['infestante']
+                )
+            ) {
                 echo json_encode(['success' => true]);
             } else {
                 echo json_encode(['success' => false]);

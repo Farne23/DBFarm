@@ -5,6 +5,8 @@ $datiCatastali = $dbh->getDatiCatsataliDi($idTerreno);
 $datiTerreno = $dbh->getDatiDi($idTerreno);
 $readyNuovoCiclo = $dbh->readyNuovoCiclo($idTerreno);
 $Colture = $dbh->getColture();
+$infestanti = $dbh->getInfestanti();
+$statoCampo = $dbh->verificaStatoCampo($idTerreno);
 
 ?>
 <h2 class="orange-on-white"><?php echo $datiTerreno[0]['nome']; ?></h2>
@@ -48,6 +50,51 @@ $Colture = $dbh->getColture();
     </tr>
 </table>
 
+<h2 class="orange-on-white">Stato del campo</h2>
+<?php
+if (empty($statoCampo)) {
+    echo '<div class="hidden">Non ci sono campi da visualizzare</div>';
+} else {
+    $rilevazione = $statoCampo[0];
+    echo '<div class="campo-rilevazione">';
+    echo '<p><strong>Data:</strong> ' . htmlspecialchars($rilevazione['data']) . '</p>';
+    echo '<p><strong>pH:</strong> ' . htmlspecialchars($rilevazione['PH']) . '</p>';
+    echo '<p><strong>Umidità (%):</strong> ' . htmlspecialchars($rilevazione['perc_umidita']) . '%</p>';
+    echo '<p><strong>Sostanza Organica (%):</strong> ' . htmlspecialchars($rilevazione['perc_sostanzaOrganica']) . '%</p>';
+    echo '<p><strong>Azoto (%):</strong> ' . htmlspecialchars($rilevazione['perc_azoto']) . '%</p>';
+    $infestazione = $rilevazione['infestazione_rilevata'];
+    if ($infestazione !== 'nessuna') {
+        echo '<p class="alert alert-warning">Infestazione rilevata: ' . htmlspecialchars($infestazione) . '</p>';
+    } else {
+        echo '<p><strong>Infestazione rilevata:</strong> Nessuna</p>';
+    }
+    if ($rilevazione['azoto_insufficiente_coltura'] == 1) {
+        echo '<p class="alert alert-warning">Azoto insufficiente per la coltura!</p>';
+    }
+    if ($rilevazione['so_insufficiente_coltura'] == 1) {
+        echo '<p class="alert alert-warning">Sostanza organica insufficiente per la coltura!</p>';
+    }
+    if ($rilevazione['ph_insufficiente_coltura'] == 1) {
+        echo '<p class="alert alert-warning">pH insufficiente per la coltura!</p>';
+    }
+    if ($rilevazione['ph_eccessivo_coltura'] == 1) {
+        echo '<p class="alert alert-warning">pH eccessivo per la coltura!</p>';
+    }
+    if ($rilevazione['ph_insufficiente_granulometria'] == 1) {
+        echo '<p class="alert alert-warning">pH insufficiente per la granulometria!</p>';
+    }
+    if ($rilevazione['ph_eccessivo_granulometria'] == 1) {
+        echo '<p class="alert alert-warning">pH eccessivo per la granulometria!</p>';
+    }
+    if ($rilevazione['umidita_insufficiente_granulometria'] == 1) {
+        echo '<p class="alert alert-warning">Umidità insufficiente per la granulometria!</p>';
+    }
+    if ($rilevazione['umidita_eccessiva_granulometria'] == 1) {
+        echo '<p class="alert alert-warning">Umidità eccessiva per la granulometria!</p>';
+    }
+    echo '</div>';
+} ?>
+
 <h2>Cicli produttivi svolti</h2>
 <ul class="terreni-list">
     <?php foreach ($cicliProduttivi as $ciclo): ?>
@@ -55,9 +102,9 @@ $Colture = $dbh->getColture();
             <div class="terreno-header orange-on-white">
                 <strong>[<?= htmlspecialchars($ciclo['idCicloProduttivo']) ?>] Coltivato :
                     <?= htmlspecialchars($ciclo['coltura_coltivata']) ?>
-                    <?php 
-                        echo "(" . htmlspecialchars($ciclo['possesso']) .")";
-                     ?></strong>
+                    <?php
+                    echo "(" . htmlspecialchars($ciclo['possesso']) . ")";
+                    ?></strong>
             </div>
             <div class="terreno-details">
                 <span>Inizio:</span>
@@ -83,53 +130,94 @@ $Colture = $dbh->getColture();
     <?php endforeach; ?>
 </ul>
 
-<?php if (!$readyNuovoCiclo[0]["pronto"]): ?>
-    <h3>
-        Registra un nuovo ciclo produttivo
-    </h3>
-    <form id="newCicloForm">
-        <div class="input-line" id="newCicloInput">
-            <div class="input-group hidden">
-                <label for="terrenoNewCiclo">Coltura</label>
-                <select id="terrenoNewCiclo">
-                    <?php
-                    echo '<option value="' . $idTerreno . '" selected="selected">Ciclo ' . $idTerreno . '</option>;';
-                    ?>
-                </select>
-            </div>
-            <div class="input-group">
-                <label for="colturaNewCiclo">Coltura</label>
-                <select id="colturaNewCiclo">
-                    <?php
-                    foreach ($Colture as $coltura) {
-                        echo '<option value="' . $coltura["nome_coltura"] . '" selected="selected">' . $coltura["nome_coltura"] . '</option>;';
-                    }
-                    ?>
-                </select>
-            </div>
-            <div class="input-group">
-                <label for="dataInizio">Inizio</label>
-                <input id="dataInizio" type="date" required />
-            </div>
-            <div class="input-group">
-                <label for="costoNewCiclo">Costo (Affitto)</label>
-                <input id="costoNewCiclo" type="number" min="1" step="1" />
-            </div>
-
-            <div class="input-group">
-                <label for="proprietario">Proprietario</label>
-                <input id="proprietario" type="text" minlength="2" maxlength="50" pattern="[A-Za-z\s]+" />
-            </div>
-            <div class="input-group">
-                <input id="recordNewCiclo" type="submit" value="Registra" class="orange-on-white" />
-            </div>
+<h3 <?php if ($readyNuovoCiclo[0]["pronto"]) {
+    echo "class='hidden'";
+} ?>>
+    Registra un nuovo ciclo produttivo
+</h3>
+<form id="newCicloForm" <?php if ($readyNuovoCiclo[0]["pronto"]) {
+    echo "class='hidden'";
+} ?>>
+    <div class="input-line" id="newCicloInput">
+        <div class="input-group hidden">
+            <label for="terrenoNewCiclo">Coltura</label>
+            <select id="terrenoNewCiclo">
+                <?php
+                echo '<option value="' . $idTerreno . '" selected="selected">Ciclo ' . $idTerreno . '</option>;';
+                ?>
+            </select>
         </div>
-    </form>
-<?php endif; ?>
+        <div class="input-group">
+            <label for="colturaNewCiclo">Coltura</label>
+            <select id="colturaNewCiclo">
+                <?php
+                foreach ($Colture as $coltura) {
+                    echo '<option value="' . $coltura["nome_coltura"] . '" selected="selected">' . $coltura["nome_coltura"] . '</option>;';
+                }
+                ?>
+            </select>
+        </div>
+        <div class="input-group">
+            <label for="dataInizio">Inizio</label>
+            <input id="dataInizio" type="date" required />
+        </div>
+        <div class="input-group">
+            <label for="costoNewCiclo">Costo (Affitto)</label>
+            <input id="costoNewCiclo" type="number" min="1" step="1" />
+        </div>
 
-<?php if (!$readyNuovoCiclo[0]["pronto"]): ?>
-    <h3>
-        Registra una nuova rilevazione
-    </h3>
+        <div class="input-group">
+            <label for="proprietario">Proprietario</label>
+            <input id="proprietario" type="text" minlength="2" maxlength="50" pattern="[A-Za-z\s]+" />
+        </div>
+        <div class="input-group">
+            <input id="recordNewCiclo" type="submit" value="Registra" class="orange-on-white" />
+        </div>
+    </div>
+</form>
 
-<?php endif; ?>
+
+<h3>
+    Registra una nuova rilevazione
+</h3>
+<form id="newRilevazioneForm">
+    <div class="input-line" id="newRilevazioneInput">
+        <div class="input-group">
+            <label for="idTerreno">Terreno</label>
+            <input type="number" id="idTerreno" name="idTerreno" value="<?= $idTerreno ?>" required disabled>
+        </div>
+        <div class="input-group">
+            <label for="ph">pH</label>
+            <input type="number" step="0.01" id="ph" name="ph" required min="0" max="14">
+        </div>
+        <div class="input-group">
+            <label for="umidita">Umidità (%)</label>
+            <input type="number" step="0.01" id="umidita" name="umidita" placeholder="Inserisci % Umidità" required
+                min="0" max="100">
+        </div>
+        <div class="input-group">
+            <label for="sostanzaOrganica">S. Organica (%)</label>
+            <input type="number" step="0.01" id="sostanzaOrganica" name="sostanzaOrganica"
+                placeholder="Inserisci % Sostanza Organica" required min="0" max="100">
+        </div>
+        <div class="input-group">
+            <label for="azoto">Azoto (%)</label>
+            <input type="number" step="0.01" id="azoto" name="azoto" placeholder="Inserisci % Azoto" required min="0"
+                max="100">
+        </div>
+        <div class="input-group">
+            <label for="infestante">Infestante</label>
+            <select id="infestante" name="infestante">
+                <option value="">Seleziona un infestante</option>
+                <?php
+                foreach ($infestanti as $infestante) {
+                    echo '<option value="' . htmlspecialchars($infestante["nome_infestante"]) . '">' . htmlspecialchars($infestante["nome_infestante"]) . '</option>';
+                }
+                ?>
+            </select>
+        </div>
+        <div class="input-group">
+            <input type="submit" id="submitRilevazione" class="orange-on-white" value="Registra">
+        </div>
+    </div>
+</form>

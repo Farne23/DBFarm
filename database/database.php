@@ -408,6 +408,15 @@ class DatabaseHelper
         return $result->fetch_all(MYSQLI_ASSOC);
     }
 
+    public function getInfestanti()
+    {
+        $stmt = $this->db->prepare("SELECT nome_infestante FROM infestanti");
+        $stmt->execute();
+        $result = $stmt->get_result();
+        return $result->fetch_all(MYSQLI_ASSOC);
+    }
+
+
     public function registraNuovoCiclo($idTerreno, $coltura, $datainizio, $costo, $proprietario)
     {
         // Query per verificare che la data di inizio non sia inferiore alla data di fine di nessun ciclo esistente
@@ -436,6 +445,44 @@ class DatabaseHelper
         }
 
         return $stmt->execute();
+    }
+
+    public function registraNuovaRilevazione($idTerreno, $ph, $umidita, $sostanzaOrganica, $azoto, $infestante)
+    {
+        $oggi = date('Y-m-d');
+        $stmt = $this->db->prepare("INSERT INTO rilevazioni (data, idTerreno, Ph, perc_umidita, perc_sostanzaOrganica, perc_azoto, infestazione) 
+                                VALUES (?, ?, ?, ?, ?, ?, ?)");
+        $stmt->bind_param("sidddds", $oggi, $idTerreno, $ph, $umidita, $sostanzaOrganica, $azoto, $infestante);
+        return $stmt->execute();
+    }
+
+    public function verificaStatoCampo($idTerreno){
+        $stmt = $this->db->prepare("SELECT 
+            rilevazioni.data, 
+            rilevazioni.PH, 
+            rilevazioni.perc_umidita, 
+            rilevazioni.perc_sostanzaOrganica, 
+            rilevazioni.perc_sostanzaOrganica, rilevazioni.perc_azoto, IF(ISNULL(rilevazioni.infestazione),'nessuna',rilevazioni.infestazione) as 'infestazione_rilevata',
+            (rilevazioni.perc_azoto < colture.azoto_minimo) as 'azoto_insufficiente_coltura',
+            (rilevazioni.perc_sostanzaOrganica < colture.sostanza_organica_minima) as 'so_insufficiente_coltura',
+            (rilevazioni.PH < colture.ph_minimo)  as 'ph_insufficiente_coltura',
+            (rilevazioni.PH > colture.ph_massimo) as 'ph_eccessivo_coltura',
+            (rilevazioni.PH < granulometrie.ph_minimo)  as 'ph_insufficiente_granulometria',
+            (rilevazioni.PH > granulometrie.ph_massimo) as 'ph_eccessivo_granulometria',
+            (rilevazioni.perc_umidita < granulometrie.umidita_minima)  as 'umidita_insufficiente_granulometria',
+            (rilevazioni.perc_umidita > granulometrie.umidita_massima) as 'umidita_eccessiva_granulometria'
+            FROM cicli_produttivi 
+            INNER JOIN rilevazioni ON rilevazioni.idTerreno = cicli_produttivi.idTerreno 
+            INNER JOIN colture ON cicli_produttivi.coltura_coltivata = colture.nome_coltura
+            INNER JOIN terreni ON terreni.idTerreno = rilevazioni.idTerreno
+            INNER JOIN granulometrie ON terreni.granulometria = granulometrie.nome_granulometria
+            WHERE ISNULL(cicli_produttivi.data_fine)
+            AND rilevazioni.data = CURRENT_DATE 
+            AND cicli_produttivi.idTerreno = ? ");
+            $stmt->bind_param("i", $idTerreno);
+            $stmt->execute();
+            $result = $stmt->get_result();
+            return $result->fetch_all(MYSQLI_ASSOC);
     }
 }
 ?>

@@ -635,30 +635,9 @@ CREATE TABLE rilevazioni (
     perc_umidita DECIMAL(5,2) NOT NULL,
     perc_sostanzaOrganica DECIMAL(5,2) NOT NULL,
     perc_azoto DECIMAL(5,2) NOT NULL,
-    infestazione VARCHAR(255),
+    infestazione VARCHAR(100),
     PRIMARY KEY (idTerreno, data),
-    FOREIGN KEY (idTerreno) REFERENCES terreni(idTerreno),
-    FOREIGN KEY (infestazione) REFERENCES infestanti(nome_infestante)
-);
-
-INSERT INTO rilevazioni (idTerreno, data, PH, perc_umidita, perc_sostanzaOrganica, Perc_azoto, infestazione)
-VALUES
-    (1, '2023-07-01', 6.5, 10.0, 2.5, 0.8, 'Cipero'),
-    (2, '2023-08-01', 6.0, 15.0, 3.0, 0.9, 'Cipero'),
-    (3, '2023-09-01', 5.8, 12.0, 2.8, 0.7, NULL),
-    (4, '2023-10-01', 6.2, 18.0, 3.5, 1.0, NULL),
-    (5, '2023-11-01', 6.3, 14.0, 3.2, 0.9, NULL);
-
-    CREATE TABLE rilevazioni (
-    data DATE NOT NULL,
-    idTerreno INT NOT NULL,
-    Ph DECIMAL(4, 2) NOT NULL,
-    perc_umidita DECIMAL(5, 2) NOT NULL,
-    perc_sosOrganica DECIMAL(5, 2) NOT NULL,
-    perc_azoto DECIMAL(5, 2) NOT NULL,
-    idInfestante INT,
-    PRIMARY KEY (data, idTerreno),
     UNIQUE (data, idTerreno),
     FOREIGN KEY (idTerreno) REFERENCES terreni(idTerreno),
-    FOREIGN KEY (idInfestante) REFERENCES infestanti(idInfestante) 
+    FOREIGN KEY (infestazione) REFERENCES infestanti(nome_infestante)
 );
