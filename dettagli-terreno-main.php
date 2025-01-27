@@ -53,7 +53,7 @@ $statoCampo = $dbh->verificaStatoCampo($idTerreno);
 <h2 class="orange-on-white">Stato del campo</h2>
 <?php
 if (empty($statoCampo)) {
-    echo '<div class="hidden">Non ci sono campi da visualizzare</div>';
+    echo '<div id="statoCampo">Stato non rilevato oggi</div>';
 } else {
     $rilevazione = $statoCampo[0];
     echo '<div class="campo-rilevazione">';

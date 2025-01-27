@@ -82,7 +82,36 @@ try {
             break;
         case "newRilevazione":
             if (
-                $dbh->registraNuovaRilevazione($data['idTerreno'],$data['ph'],$data['umidita'],$data['sostanzaOrganica'],$data['azoto'],$data['infestante']
+                $dbh->registraNuovaRilevazione(
+                    $data['idTerreno'],
+                    $data['ph'],
+                    $data['umidita'],
+                    $data['sostanzaOrganica'],
+                    $data['azoto'],
+                    $data['infestante']
+                )
+            ) {
+                echo json_encode(['success' => true]);
+            } else {
+                echo json_encode(['success' => false]);
+            }
+            break;
+        case "concludiLavorazione":
+            if (
+                $dbh->concludiLavorazioni(
+                    $data['ciclo'],
+                    $data['numero'],
+                )
+            ) {
+                echo json_encode(['success' => true]);
+            } else {
+                echo json_encode(['success' => false]);
+            }
+            break;
+        case "concludiCicloProduttivo":
+            if (
+                $dbh->concludiCicloProduttivo(
+                    $data['ciclo']
                 )
             ) {
                 echo json_encode(['success' => true]);

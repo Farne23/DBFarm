@@ -456,7 +456,8 @@ class DatabaseHelper
         return $stmt->execute();
     }
 
-    public function verificaStatoCampo($idTerreno){
+    public function verificaStatoCampo($idTerreno)
+    {
         $stmt = $this->db->prepare("SELECT 
             rilevazioni.data, 
             rilevazioni.PH, 
@@ -479,10 +480,46 @@ class DatabaseHelper
             WHERE ISNULL(cicli_produttivi.data_fine)
             AND rilevazioni.data = CURRENT_DATE 
             AND cicli_produttivi.idTerreno = ? ");
-            $stmt->bind_param("i", $idTerreno);
-            $stmt->execute();
-            $result = $stmt->get_result();
-            return $result->fetch_all(MYSQLI_ASSOC);
+        $stmt->bind_param("i", $idTerreno);
+        $stmt->execute();
+        $result = $stmt->get_result();
+        return $result->fetch_all(MYSQLI_ASSOC);
+    }
+
+    public function getLavorazioni($idCicloProduttivo)
+    {
+
+        $stmt = $this->db->prepare("SELECT lavorazioni.* FROM lavorazioni WHERE lavorazioni.idCicloProduttivo = ? ORDER BY lavorazioni.numero_lavorazione DESC");
+        $stmt->bind_param("i", $idCicloProduttivo);
+        $stmt->execute();
+        $result = $stmt->get_result();
+        return $result->fetch_all(MYSQLI_ASSOC);
+    }
+
+    public function concludiLavorazioni($ciclo, $numero)
+    {
+        $stmt = $this->db->prepare("UPDATE lavorazioni 
+        SET data_fine = CURDATE() 
+        WHERE idCicloProduttivo = ? AND numero_lavorazione = ?");
+        $stmt->bind_param("ii", $ciclo, $numero);
+        return $stmt->execute();
+    }
+
+    public function concludiCicloProduttivo($ciclo)
+    {
+        $stmt = $this->db->prepare("UPDATE cicli_produttivi 
+        SET data_fine = CURDATE() 
+        WHERE idCicloProduttivo = ?");
+        $stmt->bind_param("i", $ciclo);
+        return $stmt->execute();
+    }
+
+    public function getCiclo($idCicloProduttivo){
+        $stmt = $this->db->prepare("SELECT * FROM cicli_produttivi WHERE idCicloProduttivo = ?");
+        $stmt->bind_param("i", $idCicloProduttivo);
+        $stmt->execute();
+        $result = $stmt->get_result();
+        return $result->fetch_all(MYSQLI_ASSOC);
     }
 }
 ?>
