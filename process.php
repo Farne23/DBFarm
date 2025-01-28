@@ -119,6 +119,38 @@ try {
                 echo json_encode(['success' => false]);
             }
             break;
+        case "avviaLavorazione":
+            if (
+                $dbh->avviaLavorazione(
+                    $data['ciclo'],
+                    $data['categoria'],
+                    $data['inizio']
+                )
+            ) {
+                echo json_encode(['success' => true]);
+            } else {
+                echo json_encode(['success' => false]);
+            }
+            break;
+        case "aggiungiTurnoLavorativo":
+            if (
+                $dbh->aggiungiTurnoLavorativo(
+                    $data['idCicloProduttivo'],
+                    $data['numero'],
+                    $data['operatore'],
+                    $data['mezzo'],
+                    $data['attrezzi'],
+                    $data['prodotto'],
+                    $data['quantita'],
+                    $data['ore']
+                )
+            ) {
+                echo json_encode(['success' => true]);
+            } else {
+                echo json_encode(['success' => false]);
+            }
+            break;
+
     }
 } catch (Exception $e) {
     // Gestisci eventuali errori

@@ -231,7 +231,7 @@ main > section > ul > li > div:first-of-type{
     margin-left: auto;
 }
 
-input[type="submit"], #formMacchinario button[type="submit"]{
+input[type="submit"],button , #formMacchinario button[type="submit"]{
     border: none;
     cursor: pointer;
     padding: 8px 12px;
@@ -428,4 +428,13 @@ h4{
 
 #statoCampo{
     padding-left: 10px;
+}
+
+#newTurnoLavorativo div{
+    height: 65px;
+    width: 200px;
+}
+
+#newTurnoLavorativo {
+   border:  1px solid #A24936;
 }

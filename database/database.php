@@ -477,7 +477,6 @@ class DatabaseHelper
             INNER JOIN colture ON cicli_produttivi.coltura_coltivata = colture.nome_coltura
             INNER JOIN terreni ON terreni.idTerreno = rilevazioni.idTerreno
             INNER JOIN granulometrie ON terreni.granulometria = granulometrie.nome_granulometria
-            WHERE ISNULL(cicli_produttivi.data_fine)
             AND rilevazioni.data = CURRENT_DATE 
             AND cicli_produttivi.idTerreno = ? ");
         $stmt->bind_param("i", $idTerreno);
@@ -514,12 +513,69 @@ class DatabaseHelper
         return $stmt->execute();
     }
 
-    public function getCiclo($idCicloProduttivo){
+    public function getCiclo($idCicloProduttivo)
+    {
         $stmt = $this->db->prepare("SELECT * FROM cicli_produttivi WHERE idCicloProduttivo = ?");
         $stmt->bind_param("i", $idCicloProduttivo);
         $stmt->execute();
         $result = $stmt->get_result();
         return $result->fetch_all(MYSQLI_ASSOC);
+    }
+
+    public function getCategorie()
+    {
+        $stmt = $this->db->prepare("SELECT nome_categoria FROM categorie_lavorazioni");
+        $stmt->execute();
+        $result = $stmt->get_result();
+        return $result->fetch_all(MYSQLI_ASSOC);
+    }
+
+
+    public function avviaLavorazione($ciclo, $categoria, $data)
+    {
+        $checkStmt = $this->db->prepare("SELECT COUNT(*) as count 
+                                          FROM lavorazioni 
+                                          WHERE idCicloProduttivo = ? 
+                                          AND (data_fine IS NULL OR data_fine > ? OR ? < CURRENT_DATE())");
+        $checkStmt->bind_param("iss", $ciclo, $data, $data);
+        $checkStmt->execute();
+        $checkResult = $checkStmt->get_result()->fetch_assoc();
+
+        if ($checkResult['count'] == 0) {
+            $lastNumberStmt = $this->db->prepare("SELECT IFNULL(MAX(numero_lavorazione), 0) as last_number 
+                                                   FROM lavorazioni 
+                                                   WHERE idCicloProduttivo = ?");
+            $lastNumberStmt->bind_param("i", $ciclo);
+            $lastNumberStmt->execute();
+            $lastNumberResult = $lastNumberStmt->get_result()->fetch_assoc();
+
+            $newNumeroLavorazione = $lastNumberResult['last_number'] + 1;
+            $insertStmt = $this->db->prepare("INSERT INTO lavorazioni (idCicloProduttivo, numero_lavorazione, categoria, data_inizio) 
+                                              VALUES (?, ?, ?, ?)");
+            $insertStmt->bind_param("iiss", $ciclo, $newNumeroLavorazione, $categoria, $data);
+            if ($insertStmt->execute()) {
+                $stmt = $this->db->prepare("UPDATE terreni
+                    JOIN cicli_produttivi ON terreni.idTerreno = cicli_produttivi.idTerreno
+                    SET terreni.idCicloProduttivo = ?, terreni.numero_lavorazione = ?
+                    WHERE cicli_produttivi.idCicloProduttivo = ?");
+                $stmt->bind_param("iii", $ciclo, $newNumeroLavorazione, $ciclo);
+                return $stmt->execute();
+            }
+        }
+        return false;
+    }
+
+    function aggiungiTurnoLAvorativo(
+        $ciclo,
+        $numero,
+        $operatore,
+        $mezzo,
+        $attrezzi,
+        $prodotti,
+        $quantita,
+        $ore
+    ) {
+
     }
 }
 ?>

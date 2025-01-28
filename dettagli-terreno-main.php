@@ -53,7 +53,7 @@ $statoCampo = $dbh->verificaStatoCampo($idTerreno);
 <h2 class="orange-on-white">Stato del campo</h2>
 <?php
 if (empty($statoCampo)) {
-    echo '<div id="statoCampo">Stato non rilevato oggi</div>';
+    echo '<div id="statoCampo">Non rilevato</div>';
 } else {
     $rilevazione = $statoCampo[0];
     echo '<div class="campo-rilevazione">';
@@ -99,7 +99,12 @@ if (empty($statoCampo)) {
 <ul class="terreni-list">
     <?php foreach ($cicliProduttivi as $ciclo): ?>
         <li onclick="location.href='dettagli-ciclo.php?id=<?= htmlspecialchars($ciclo['idCicloProduttivo']) ?>'">
-            <div class="terreno-header orange-on-white">
+            <div
+                class="terreno-header <?php if (isset($ciclo['data_fine'])) {
+                    echo 'orange-on-white';
+                } else {
+                    echo "white-on-orange";
+                } ?>">
                 <strong>[<?= htmlspecialchars($ciclo['idCicloProduttivo']) ?>] Coltivato :
                     <?= htmlspecialchars($ciclo['coltura_coltivata']) ?>
                     <?php
@@ -130,12 +135,12 @@ if (empty($statoCampo)) {
     <?php endforeach; ?>
 </ul>
 
-<h3 <?php if ($readyNuovoCiclo[0]["pronto"]) {
+<h3 <?php if (!$readyNuovoCiclo[0]["pronto"]) {
     echo "class='hidden'";
 } ?>>
     Registra un nuovo ciclo produttivo
 </h3>
-<form id="newCicloForm" <?php if ($readyNuovoCiclo[0]["pronto"]) {
+<form id="newCicloForm" <?php if (!$readyNuovoCiclo[0]["pronto"]) {
     echo "class='hidden'";
 } ?>>
     <div class="input-line" id="newCicloInput">
