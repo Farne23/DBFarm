@@ -14,9 +14,6 @@
     </header>
     <nav>
         <ul>
-            <li <?php if(isset($templateParams["sezione"]) && $templateParams["sezione"]=="Lavorazioni"){echo 'class="selected"';}?>>
-                Lavorazioni
-            </li>
             <li <?php if(isset($templateParams["sezione"]) && $templateParams["sezione"]=="Terreni"){echo 'class="selected"';}?>>
                 Terreni
             </li>

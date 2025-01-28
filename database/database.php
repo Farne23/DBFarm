@@ -49,6 +49,18 @@ class DatabaseHelper
         return $resultComplete;
     }
 
+    function getSiloListComplete()
+    {
+        $stmt = $this->db->prepare("SELECT DISTINCT edifici.* FROM edifici WHERE  edifici.tipo_silo=true GROUP BY edifici.idEdificio");
+        $stmt->execute();
+        $result = $stmt->get_result();
+        $resultComplete = $result->fetch_all(MYSQLI_ASSOC);
+        // foreach ($resultComplete as &$edificio) {
+        //     $edificio["content"] = $this->getMagazzinoContent($edificio["idEdificio"]);
+        // }
+        return $resultComplete;
+    }
+
     function registraNuovoOperatore($CF, $nome, $cognome, $dataNascita, $telefono)
     {
         $stmt = $this->db->prepare("INSERT INTO operatori (CF, nome, cognome, data_nascita, telefono) VALUES (?,?, ?,?,?)");
@@ -371,6 +383,15 @@ class DatabaseHelper
         return $result->fetch_all(MYSQLI_ASSOC);
     }
 
+    public function getCicliProduttivi()
+    {
+        $stmt = $this->db->prepare("SELECT * FROM cicli_produttivi WHERE ISNULL(data_fine)");
+        $stmt->execute();
+        $result = $stmt->get_result();
+        return $result->fetch_all(MYSQLI_ASSOC);
+    }
+
+
     public function getDatiCatsataliDi($id)
     {
         $stmt = $this->db->prepare("SELECT * FROM dati_catastali WHERE idTerreno = ?");
@@ -456,6 +477,19 @@ class DatabaseHelper
         return $stmt->execute();
     }
 
+    public function registraRaccolto(
+        $ciclo,
+        $data,
+        $quantita,
+        $silo
+    ) {
+        $stmt = $this->db->prepare("INSERT INTO raccolti (idCicloProduttivo,data,quantita,idSilo) 
+        VALUES (?, ?, ?, ?)");
+        $stmt->bind_param("isii", $ciclo, $data, $quantita, $silo);
+        return $stmt->execute();
+
+    }
+
     public function verificaStatoCampo($idTerreno)
     {
         $stmt = $this->db->prepare("SELECT 
@@ -492,27 +526,82 @@ class DatabaseHelper
         $stmt->bind_param("i", $idCicloProduttivo);
         $stmt->execute();
         $result = $stmt->get_result();
+        $resultComplete = $result->fetch_all(MYSQLI_ASSOC);
+        foreach ($resultComplete as &$lavorazione) {
+            $lavorazione["turni"] = $this->getTurniLavorazioni($lavorazione['idCicloProduttivo'], $lavorazione['numero_lavorazione']);
+        }
+        return $resultComplete;
+    }
+
+    public function getTurniLavorazioni($idCicloProduttivo, $numero_lavorazione)
+    {
+
+        $stmt = $this->db->prepare("SELECT turni_lavorativi.* FROM turni_lavorativi WHERE idCicloProduttivo = ? AND numero_lavorazione = ? ORDER BY data DESC");
+        $stmt->bind_param("ii", $idCicloProduttivo, $numero_lavorazione);
+        $stmt->execute();
+        $result = $stmt->get_result();
+        $resultComplete = $result->fetch_all(MYSQLI_ASSOC);
+        foreach ($resultComplete as &$turno) {
+            $turno["macchinari"] = $this->getMacchinariImpiegati($turno['idTurno']);
+        }
+        return $resultComplete;
+    }
+
+    function getMacchinariImpiegati($turno)
+    {
+        $stmt = $this->db->prepare("SELECT macchinari.* FROM impiego_macchinari INNER JOIN macchinari ON impiego_macchinari.idMacchinario = macchinari.idMacchinario  WHERE idTurno  = ? ORDER BY semovente DESC");
+        $stmt->bind_param("i", $turno);
+        $stmt->execute();
+        $result = $stmt->get_result();
         return $result->fetch_all(MYSQLI_ASSOC);
     }
 
-    public function concludiLavorazioni($ciclo, $numero)
+    public function concludiLavorazioni($ciclo, $numero, $data)
     {
+        $checkStmt = $this->db->prepare("
+                SELECT data_inizio 
+                FROM lavorazioni 
+                WHERE idCicloProduttivo = ? AND numero_lavorazione = ?");
+        $checkStmt->bind_param("ii", $ciclo, $numero);
+        $checkStmt->execute();
+        $checkResult = $checkStmt->get_result();
+
+        if ($checkResult->num_rows > 0) {
+            $row = $checkResult->fetch_assoc();
+            if (strtotime($data) < strtotime($row['data_inizio'])) {
+                return false;
+            }
+        }
+
         $stmt = $this->db->prepare("UPDATE lavorazioni 
-        SET data_fine = CURDATE() 
+        SET data_fine = ?
         WHERE idCicloProduttivo = ? AND numero_lavorazione = ?");
-        $stmt->bind_param("ii", $ciclo, $numero);
+        $stmt->bind_param("sii", $data, $ciclo, $numero);
         return $stmt->execute();
     }
 
-    public function concludiCicloProduttivo($ciclo)
+    public function concludiCicloProduttivo($ciclo, $data)
     {
-        $stmt = $this->db->prepare("UPDATE cicli_produttivi 
-        SET data_fine = CURDATE() 
-        WHERE idCicloProduttivo = ?");
-        $stmt->bind_param("i", $ciclo);
-        return $stmt->execute();
-    }
+        $checkStmt = $this->db->prepare("SELECT data_inizio 
+                                          FROM cicli_produttivi 
+                                          WHERE idCicloProduttivo = ?");
+        $checkStmt->bind_param("i", $ciclo);
+        $checkStmt->execute();
+        $checkResult = $checkStmt->get_result()->fetch_assoc();
 
+        if ($checkResult) {
+            $dataInizio = $checkResult['data_inizio'];
+            if ($dataInizio > $data) {
+                return false;
+            }
+            $stmt = $this->db->prepare("UPDATE cicli_produttivi 
+                                         SET data_fine = ?
+                                         WHERE idCicloProduttivo = ?");
+            $stmt->bind_param("si", $data, $ciclo);
+            return $stmt->execute();
+        }
+        return false;
+    }
     public function getCiclo($idCicloProduttivo)
     {
         $stmt = $this->db->prepare("SELECT * FROM cicli_produttivi WHERE idCicloProduttivo = ?");
@@ -533,11 +622,25 @@ class DatabaseHelper
 
     public function avviaLavorazione($ciclo, $categoria, $data)
     {
-        $checkStmt = $this->db->prepare("SELECT COUNT(*) as count 
+        $stmt = $this->db->prepare("
+            SELECT COUNT(*) AS count 
+            FROM cicli_produttivi 
+            WHERE idCicloProduttivo = ? AND data_inizio > ?"
+        );
+        $stmt->bind_param("is", $ciclo, $data);
+        $stmt->execute();
+        $checkResult = $stmt->get_result();
+        $row = $checkResult->fetch_assoc();
+
+        if ($row['count'] > 0) {
+            return false;
+        }
+
+        $checkStmt = $this->db->prepare("SELECT COUNT(*) as count
                                           FROM lavorazioni 
                                           WHERE idCicloProduttivo = ? 
-                                          AND (data_fine IS NULL OR data_fine > ? OR ? < CURRENT_DATE())");
-        $checkStmt->bind_param("iss", $ciclo, $data, $data);
+                                          AND (lavorazioni.data_fine IS NULL OR lavorazioni.data_fine > ? )");
+        $checkStmt->bind_param("is", $ciclo, $data);
         $checkStmt->execute();
         $checkResult = $checkStmt->get_result()->fetch_assoc();
 
@@ -565,17 +668,111 @@ class DatabaseHelper
         return false;
     }
 
-    function aggiungiTurnoLAvorativo(
+    function aggiungiTurnoLavorativo(
         $ciclo,
         $numero,
         $operatore,
         $mezzo,
         $attrezzi,
-        $prodotti,
+        $prodotto,
         $quantita,
         $ore
     ) {
 
+        $stmt = $this->db->prepare("INSERT INTO turni_lavorativi (
+                CF, 
+                idCicloProduttivo, 
+                numero_lavorazione, 
+                data, 
+                durata, 
+                id_prodotto, 
+                magazzino_prodotto, 
+                quantita_prodotto
+            ) VALUES (?, ?, ?, CURDATE(), ?, ?, ?, ?)");
+
+
+        $stmt->bind_param(
+            "siiiiii",
+            $operatore,
+            $ciclo,
+            $numero,
+            $ore,
+            $prodotto['idProdotto'],
+            $prodotto['idEdificio'],
+            $quantita
+        );
+
+        if (!$stmt->execute()) {
+            return false;
+        }
+
+        $idTurno = $this->db->insert_id;
+
+        $stmt = $this->db->prepare("INSERT INTO impiego_macchinari (idTurno, idMacchinario) VALUES (?, ?)");
+        $stmt->bind_param("ii", $idTurno, $mezzo);
+        if (!$stmt->execute()) {
+            return false;
+        }
+
+        foreach ($attrezzi as $attrezzo) {
+            $stmt = $this->db->prepare("INSERT INTO impiego_macchinari (idTurno, idMacchinario) VALUES (?, ?)");
+            $stmt->bind_param("ii", $idTurno, $attrezzo);
+            if (!$stmt->execute()) {
+                return false;
+            }
+        }
+
+        $updateStmt = $this->db->prepare("UPDATE cicli_produttivi
+                SET bilancio = bilancio + (
+                    SELECT 
+                        (
+                            SELECT SUM(costo_orario) 
+                            FROM impiego_macchinari 
+                            INNER JOIN macchinari ON impiego_macchinari.idMacchinario = macchinari.idMacchinario 
+                            WHERE impiego_macchinari.idTurno = ?
+                        ) * ? +  
+                        (
+                            SELECT SUM(contratti_impiego.paga_oraria) 
+                            FROM contratti_impiego 
+                            WHERE DATE_ADD(contratti_impiego.data_inizio, INTERVAL contratti_impiego.durata DAY) > CURDATE()
+                        ) * ? +  
+                        (
+                            SELECT SUM(prodotti.costo * ?) 
+                            FROM prodotti 
+                            WHERE idProdotto = ?
+                        )
+                ) 
+                WHERE cicli_produttivi.idCicloProduttivo = ?");
+        $updateStmt->bind_param("iiiiii", $idTurno, $ore, $ore, $quantita, $prodotto['idProdotto'], $ciclo);
+        if (!$updateStmt->execute()) {
+            return false;
+        }
+
+        $stmt = $this->db->prepare("UPDATE depositi SET quantita = quantita - ? WHERE idEdificio = ? AND idProdotto = ?");
+        $stmt->bind_param("iii", $quantita, $prodotto['idEdificio'], $prodotto['idProdotto']);
+        if (!$stmt->execute()) {
+            return false;
+        }
+        return true;
+
+    }
+
+    function checkQtValida($prodotto, $quantita)
+    {
+        $checkStmt = $this->db->prepare("SELECT quantita 
+        FROM depositi
+        WHERE idProdotto = ?
+        AND idEdificio = ?");
+
+        $checkStmt->bind_param("ii", $prodotto['idProdotto'], $prodotto['idEdificio']);
+        $checkStmt->execute();
+        $checkResult = $checkStmt->get_result();
+        $row = $checkResult->fetch_assoc();
+
+        if (intval($row['quantita']) < $quantita) {
+            return false;
+        }
+        return true;
     }
 }
 ?>

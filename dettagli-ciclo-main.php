@@ -7,7 +7,13 @@ $Operatori = $dbh->getOperatori();
 $Mezzi_semoventi = $dbh->getMacchinariListFiltered("qualsiasi", "semoventeSi");
 $Attrezzi = $dbh->getMacchinariListFiltered("qualsiasi", "semoventeNo");
 $Magazzini = $dbh->getMagazziniListComplete();
-
+?>
+<h1>Ciclo produttivo <?= $ciclo["idCicloProduttivo"] ?> sul terreno <?= $ciclo["idTerreno"] ?>
+    (<?= $ciclo["coltura_coltivata"] ?>) </h1>
+<div>
+    <h3>Bilancio: <?= $ciclo["bilancio"] ?>€</h3>
+</div>
+<?php
 if (count($lavorazioni) > 0) {
     $ultima_lavorazione = $lavorazioni[0];
     ?>
@@ -26,6 +32,10 @@ if (count($lavorazioni) > 0) {
         </div>
         <div class="terreno-details">
             <span>Data inizio: <?= htmlspecialchars($ultima_lavorazione['data_inizio']) ?> </span>
+        </div>
+        <div class="input-group">
+            <label for="concludiLavorazioneData">Data fine lavorazione</label>
+            <input id="concludiLavorazioneData" type="date" required />
         </div>
         <div class="lavorazione-pulsanti">
             <input type="submit" id="concludi" class="concludi-lavorazione orange-on-white" value="Concludi lavorazione" />
@@ -135,7 +145,12 @@ if (count($lavorazioni) > 0) {
                         <div class="input-group">
                             <input type="submit" id="avviaLavorazione" class="orange-on-white " value="Avvia" />
                         </div>
-                        <div class="input-group">
+
+                        <div class="input-group" id="dataFineCicloInput">
+                            <label for="concludiCicloData">Data Fine Ciclo</label>
+                            <input id="concludiCicloData" type="date" />
+                        </div>
+                        <div class="input-group" id="dataFineCicloButton">
                             <input type="submit" id="concludi" class="orange-on-white concludi-ciclo" value="Chiudi Ciclo" />
                         </div>
                     </div>
@@ -147,7 +162,8 @@ if (count($lavorazioni) > 0) {
     <h3>Tutte le lavorazioni</h3>
     <ul class="terreni-list">
         <?php foreach ($lavorazioni as $lavorazione): ?>
-            <li>
+            <li
+                onclick="location.href='dettagli-lavorazioni.php?id=<?= htmlspecialchars($idCicloProduttivo) ?>&numero=<?= htmlspecialchars($lavorazione['numero_lavorazione']) ?>'">
                 <div class="terreno-header <?php if (isset($lavorazione['data_fine'])) {
                     echo "orange-on-white";
                 } else {

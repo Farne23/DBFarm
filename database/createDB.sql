@@ -641,3 +641,38 @@ CREATE TABLE rilevazioni (
     FOREIGN KEY (idTerreno) REFERENCES terreni(idTerreno),
     FOREIGN KEY (infestazione) REFERENCES infestanti(nome_infestante)
 );
+
+CREATE TABLE turni_lavorativi (
+    idTurno INT AUTO_INCREMENT PRIMARY KEY,
+    CF VARCHAR(16) NOT NULL,
+    idCicloProduttivo INT NOT NULL,
+    numero_lavorazione INT NOT NULL, 
+    data DATE NOT NULL, 
+    durata INT NOT NULL, 
+    id_prodotto INT,
+    magazzino_prodotto INT,
+    quantita_prodotto INT,
+    UNIQUE (data, CF),
+    FOREIGN KEY (CF) REFERENCES operatori (CF),
+    FOREIGN KEY (idCicloProduttivo, numero_lavorazione) REFERENCES lavorazioni (idCicloProduttivo, numero_lavorazione),
+    FOREIGN KEY (id_prodotto,magazzino_prodotto) REFERENCES depositi(idProdotto,idEdificio)
+);
+
+CREATE TABLE impiego_macchinari (
+    idTurno INT NOT NULL,
+    idMacchinario INT NOT NULL, 
+    PRIMARY KEY (idTurno, idMacchinario),
+    FOREIGN KEY (idTurno) REFERENCES turni_lavorativi (idTurno),
+    FOREIGN KEY (idMacchinario) REFERENCES macchinari (idMacchinario) 
+);
+
+CREATE TABLE raccolti (
+    idCicloProduttivo INT NOT NULL,    
+    data DATE NOT NULL,               
+    idSilo INT NOT NULL,           
+    quantita DECIMAL(10, 2) NOT NULL,  
+    PRIMARY KEY (idCicloProduttivo, data), 
+    FOREIGN KEY (idCicloProduttivo) REFERENCES 	cicli_produttivi(idCicloProduttivo), 
+    FOREIGN KEY (idSilo) REFERENCES edifici(idEdificio),
+    CONSTRAINT unique_raccolto UNIQUE (idCicloProduttivo, data) 
+);

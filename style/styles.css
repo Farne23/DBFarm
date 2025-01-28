@@ -1,51 +1,52 @@
-
-body{
+body {
     font-family: "Trebuchet MS", Helvetica, sans-serif;
 }
 
-body,ul,h1{
+body,
+ul,
+h1 {
     padding: 0px;
     margin: 0px;
 }
 
-ul{
+ul {
     list-style: none;
 }
 
-h1{
+h1 {
     color: #A24936;
     font-size: 28px;
     padding-top: 20px;
     padding-left: 10px;
 }
 
-nav > ul > li{
+nav>ul>li {
     color: white;
     text-align: center;
     border-right: 1px solid white;
 }
 
-nav > ul > li.selected{
+nav>ul>li.selected {
     color: #A24936;
     background-color: white;
     border-bottom: 1px solid #A24936;
     border-top: 1px solid #A24936;
 }
 
-nav > ul > li:not(.selected):hover{
+nav>ul>li:not(.selected):hover {
     background-color: #a7857e;
 }
 
 
-nav{
+nav {
     background-color: #A24936;
 }
 
-nav > ul{
+nav>ul {
     display: flex;
 }
 
-nav > ul > li{
+nav>ul>li {
     display: flex;
     align-items: center;
     justify-content: center;
@@ -55,7 +56,7 @@ nav > ul > li{
     cursor: pointer;
 }
 
-main{
+main {
     margin: 20px;
     padding: 10px;
     border: 1px solid #A24936;
@@ -63,10 +64,13 @@ main{
 
 /* Footer Styles */
 .footer {
-    background-color: #A24936; /* Arancione */
-    color: #fff; /* Testo bianco */
+    background-color: #A24936;
+    /* Arancione */
+    color: #fff;
+    /* Testo bianco */
     padding: 15px 20px;
-    font-size: 12px; /* Font più piccolo */
+    font-size: 12px;
+    /* Font più piccolo */
 }
 
 /* Contenuto del footer */
@@ -90,52 +94,55 @@ main{
 }
 
 .footer-columns ul li a {
-    color: #fff; /* Link bianchi */
+    color: #fff;
+    /* Link bianchi */
     text-decoration: none;
     transition: color 0.3s;
 }
 
 .footer-columns ul li a:hover {
-    color: #1a252f; /* Colore scuro per hover */
+    color: #1a252f;
+    /* Colore scuro per hover */
 }
 
 /* Copyright */
 .footer-bottom {
     margin-top: 15px;
-    font-size: 11px; /* Font ancora più piccolo per il copyright */
+    font-size: 11px;
+    /* Font ancora più piccolo per il copyright */
     border-top: 1px solid rgba(255, 255, 255, 0.3);
     padding-top: 10px;
 }
 
-main > section > ul > li{
+main>section>ul>li {
     border: 1px solid #A24936;
     margin: 10px;
 }
 
-main > section > ul > li > div{
+main>section>ul>li>div {
     display: flex;
     flex-direction: row;
 }
 
-main > section > ul > li > div > span{
+main>section>ul>li>div>span {
     font-size: 14px;
     width: 25%;
 }
 
-main > section > ul > li > div > span.two-slots{
+main>section>ul>li>div>span.two-slots {
     width: 50%;
 }
 
-main > section > ul > li > div > span.entire-line{
+main>section>ul>li>div>span.entire-line {
     width: 100%;
     padding: 5px;
 }
 
-span.end-section{
+span.end-section {
     border-bottom: 1px solid #A24936;
 }
 
-main > section > ul > li > div > ul > li{
+main>section>ul>li>div>ul>li {
     width: 80%;
     margin: 5px 5px 5px 0px;
     display: flex;
@@ -147,45 +154,45 @@ main > section > ul > li > div > ul > li{
 
 
 
-.expired{
+.expired {
     opacity: 50%;
 }
 
-main > section > ul > li > div > ul > li > *{
+main>section>ul>li>div>ul>li>* {
     display: flex;
     width: 25%;
 }
 
-main > section > ul > li > div > ul > li.active > span:last-of-type{
+main>section>ul>li>div>ul>li.active>span:last-of-type {
     text-align: center;
     display: inline-block;
 }
 
-main > section > ul > li > div > ul{
+main>section>ul>li>div>ul {
     width: 100%;
 }
 
-ul.full-list{
+ul.full-list {
     width: 100%;
 }
 
 
-main > section > ul > li > div:first-of-type{
+main>section>ul>li>div:first-of-type {
     padding: 5px 5px;
 }
 
-.white-on-orange{
+.white-on-orange {
     background-color: white;
     color: #A24936;
 }
 
-.orange-on-white{
+.orange-on-white {
     background-color: #A24936;
     color: white;
 }
 
 .input-line {
-    display: flex; 
+    display: flex;
     gap: 5px;
     align-items: flex-start;
     border: 1px solid #A24936;
@@ -203,8 +210,8 @@ main > section > ul > li > div:first-of-type{
 
 .input-group {
     display: flex;
-    flex-direction: column; 
-    align-items: left; 
+    flex-direction: column;
+    align-items: left;
     justify-content: center;
     width: 100px;
     padding: 5px;
@@ -218,20 +225,24 @@ main > section > ul > li > div:first-of-type{
     padding-left: 5px;
 }
 
-.input-group input ,.input-group select {
-    padding: 5px; 
-    font-size: 10px; 
-    border: 1px solid #ccc; 
-    border-radius: 4px; 
+.input-group input,
+.input-group select {
+    padding: 5px;
+    font-size: 10px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
     width: 100%;
-    box-sizing: border-box; 
+    box-sizing: border-box;
 }
 
-.input-group:last-of-type{
+.input-group:last-of-type {
     margin-left: auto;
 }
 
-input[type="submit"],button , #formMacchinario button[type="submit"]{
+input[type="submit"],
+input[type="button"],
+button,
+#formMacchinario button[type="submit"] {
     border: none;
     cursor: pointer;
     padding: 8px 12px;
@@ -245,19 +256,19 @@ input[type="submit"]:hover {
     color: #A24936;
 }
 
-a{
+a {
     color: #A24936;
     text-decoration: underline;
     padding: 5px;
     cursor: pointer;
 }
 
-.full-list  .important-attribute{
-    text-transform:uppercase;
+.full-list .important-attribute {
+    text-transform: uppercase;
     font-weight: bold;
 }
 
-.full-list span:first-of-type{
+.full-list span:first-of-type {
     width: 15%;
     border-right: 2px solid black;
     border-left: 2px solid black;
@@ -265,36 +276,36 @@ a{
     padding-right: 5px;
 }
 
-.full-list span:nth-of-type(2){
+.full-list span:nth-of-type(2) {
     padding-left: 10px;
     width: 50%;
     text-decoration: underline;
 }
 
-.fertilizzante{
+.fertilizzante {
     background-color: rgb(169, 194, 239);
 }
 
-.sementi{
+.sementi {
     background-color: rgb(132, 144, 132);
 }
 
-.diserbante{
+.diserbante {
     background-color: rgb(243, 169, 169);
 }
 
-.hidden{
+.hidden {
     display: none;
 }
 
-.full-line{
+.full-line {
     width: 100%;
     display: flex;
     padding: 2px 2px 2px 5px;
     margin-top: 10px;
 }
 
-#formMacchinario{
+#formMacchinario {
     background-color: #A24936;
     color: white;
     display: flex;
@@ -302,19 +313,19 @@ a{
     flex-wrap: wrap;
 }
 
-#formMacchinario > *{ 
+#formMacchinario>* {
     margin: 10px;
     width: 40%;
     box-sizing: border-box;
     font-size: 12px;
 }
 
-#formMacchinario > div > ul{ 
+#formMacchinario>div>ul {
     display: flex;
     flex-wrap: wrap;
 }
 
-#formMacchinario > div >ul>li{ 
+#formMacchinario>div>ul>li {
     margin: 10px;
     width: 60%;
     box-sizing: border-box;
@@ -323,7 +334,7 @@ a{
     flex-direction: column;
 }
 
-#formMacchinario > div >ul>li { 
+#formMacchinario>div>ul>li {
     padding: 5px;
     margin-bottom: 10px;
 }
@@ -375,23 +386,23 @@ a{
     text-decoration: none;
 }
 
-.positive{
-    color: green; 
+.positive {
+    color: green;
 }
 
-.negative{
+.negative {
     color: red;
 }
 
-.simpletable td{
+.simpletable td {
     padding: 10px;
 }
 
-h2{
+h2 {
     padding: 10px;
 }
 
-h4{
+h4 {
     margin-left: 10px;
 }
 
@@ -426,15 +437,35 @@ h4{
     color: white;
 }
 
-#statoCampo{
+#statoCampo {
     padding-left: 10px;
 }
 
-#newTurnoLavorativo div{
+#newTurnoLavorativo div {
     height: 65px;
     width: 200px;
 }
 
 #newTurnoLavorativo {
-   border:  1px solid #A24936;
+    border: 1px solid #A24936;
+}
+
+#dataFineCicloInput {
+    margin-left: auto;
+}
+
+#dataFineCicloButton {
+    margin-left: 10px;
+}
+
+.turno-cella {
+    border: 1px solid #ddd;
+    margin-bottom: 15px;
+    padding: 10px;
+    border-radius: 5px;
+}
+
+.turno-tabella {
+    border-collapse: collapse;
+    width: 100%;
 }

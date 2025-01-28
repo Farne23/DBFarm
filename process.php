@@ -101,6 +101,7 @@ try {
                 $dbh->concludiLavorazioni(
                     $data['ciclo'],
                     $data['numero'],
+                    $data['data']
                 )
             ) {
                 echo json_encode(['success' => true]);
@@ -111,7 +112,8 @@ try {
         case "concludiCicloProduttivo":
             if (
                 $dbh->concludiCicloProduttivo(
-                    $data['ciclo']
+                    $data['ciclo'],
+                    $data['data']
                 )
             ) {
                 echo json_encode(['success' => true]);
@@ -134,8 +136,13 @@ try {
             break;
         case "aggiungiTurnoLavorativo":
             if (
-                $dbh->aggiungiTurnoLavorativo(
-                    $data['idCicloProduttivo'],
+                $dbh->checkQtValida(
+                    $data['prodotto'],
+                    $data['quantita']
+                )
+            ) {
+                $result = $dbh->aggiungiTurnoLavorativo(
+                    $data['ciclo'],
                     $data['numero'],
                     $data['operatore'],
                     $data['mezzo'],
@@ -143,17 +150,30 @@ try {
                     $data['prodotto'],
                     $data['quantita'],
                     $data['ore']
+                );
+                echo json_encode(['success' => $result]);
+            } else {
+                echo json_encode(['success' => false]);
+            }
+            break;
+        case "nuovoRaccolto":
+            if (
+                $dbh->registraRaccolto(
+                    $data['ciclo'],
+                    $data['data'],
+                    $data['quantita'],
+                    $data['silo']
                 )
             ) {
                 echo json_encode(['success' => true]);
             } else {
                 echo json_encode(['success' => false]);
             }
+
             break;
 
     }
 } catch (Exception $e) {
-    // Gestisci eventuali errori
     echo json_encode(['success' => false, 'error' => $e->getMessage()]);
 }
 ?>

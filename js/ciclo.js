@@ -7,6 +7,7 @@ if (concludiButton) {
             const data = {
                 type: "concludiCicloProduttivo",
                 ciclo: document.getElementById('idCicloProduttivo').value,
+                data: document.getElementById('concludiCicloData').value
             };
 
             try {
@@ -34,7 +35,8 @@ if (concludiButton) {
             const data = {
                 type: "concludiLavorazione",
                 ciclo: document.getElementById('idCicloProduttivo').value,
-                numero: document.getElementById('numero').value
+                numero: document.getElementById('numero').value,
+                data: document.getElementById('concludiLavorazioneData').value
             };
 
             // Invia i dati al server tramite Fetch
@@ -88,6 +90,7 @@ if (avviaButton) {
 
 
             const result = await response.json();
+            console.log(result);
 
             if (result.success) {
                 window.location.reload();
@@ -106,19 +109,19 @@ const aggiungiTurnoButton = document.getElementById('aggiungiTurno');
 if (aggiungiTurnoButton) {
     aggiungiTurnoButton.addEventListener('click', async function (event) {
         event.preventDefault();
-
         const data = {
             type: "aggiungiTurnoLavorativo",
             ciclo: document.getElementById('idCicloProduttivo').value,
             numero: document.getElementById('numero').value,
             operatore: document.getElementById('operatoreTurno').value,
-            mezzo_semovente: document.getElementById('mezzo_semovente').value,
+            mezzo: document.getElementById('mezzo_semovente').value,
             attrezzi: Array.from(document.getElementById('attrezzi').selectedOptions).map(option => option.value),
-            prodotto: document.getElementById('prodotti').value.split(',').map(value => {
-                const [idProdotto, idMagazzino] = value.split(',');
-                return { idProdotto, idMagazzino };
-            }),
-            prodottiQt: document.getElementById('prodottiQt').value,
+           prodotto: (() => {
+                    const value = document.getElementById('prodotti').value;
+                    const [idProdotto, idEdificio] = value.split(',');
+                    return { idProdotto, idEdificio };
+                })(),   
+            quantita: document.getElementById('prodottiQt').value,
             ore: document.getElementById('ore').value
         };
 
@@ -133,10 +136,11 @@ if (aggiungiTurnoButton) {
             });
 
             const result = await response.json();
+            console.log(result);
 
             if (result.success) {
                 console.log("Turno lavorativo registrato con successo.");
-                //window.location.reload(); // Ricarica la pagina
+                window.location.reload();
             } else {
                 console.error("Errore durante la registrazione del turno:", result.error);
             }
