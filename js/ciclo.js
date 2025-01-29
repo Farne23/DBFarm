@@ -104,26 +104,42 @@ if (avviaButton) {
     });
 }
 
-const aggiungiTurnoButton = document.getElementById('aggiungiTurno');
+const aggiungiTurnoButton = document.getElementById('newTurnoLavorativo');
 
 if (aggiungiTurnoButton) {
-    aggiungiTurnoButton.addEventListener('click', async function (event) {
+    aggiungiTurnoButton.addEventListener('submit', async function (event) {
         event.preventDefault();
-        const data = {
-            type: "aggiungiTurnoLavorativo",
-            ciclo: document.getElementById('idCicloProduttivo').value,
-            numero: document.getElementById('numero').value,
-            operatore: document.getElementById('operatoreTurno').value,
-            mezzo: document.getElementById('mezzo_semovente').value,
-            attrezzi: Array.from(document.getElementById('attrezzi').selectedOptions).map(option => option.value),
-           prodotto: (() => {
+        let data;
+        if (document.getElementById('prodotti').value == "nessuno") {
+             data = {
+                type: "aggiungiTurnoLavorativo",
+                ciclo: document.getElementById('idCicloProduttivo').value,
+                numero: document.getElementById('numero').value,
+                operatore: document.getElementById('operatoreTurno').value,
+                mezzo: document.getElementById('mezzo_semovente').value,
+                attrezzi: Array.from(document.getElementById('attrezzi').selectedOptions).map(option => option.value),
+                prodotto: [null,null],
+                quantita: 0,
+                ore: document.getElementById('ore').value
+            };
+        } else {
+            data = {
+                type: "aggiungiTurnoLavorativo",
+                ciclo: document.getElementById('idCicloProduttivo').value,
+                numero: document.getElementById('numero').value,
+                operatore: document.getElementById('operatoreTurno').value,
+                mezzo: document.getElementById('mezzo_semovente').value,
+                attrezzi: Array.from(document.getElementById('attrezzi').selectedOptions).map(option => option.value),
+                prodotto: (() => {
                     const value = document.getElementById('prodotti').value;
                     const [idProdotto, idEdificio] = value.split(',');
                     return { idProdotto, idEdificio };
-                })(),   
-            quantita: document.getElementById('prodottiQt').value,
-            ore: document.getElementById('ore').value
-        };
+                })(),
+                quantita: document.getElementById('prodottiQt').value,
+                ore: document.getElementById('ore').value
+            };
+
+        }
 
         // Invia i dati al server tramite Fetch
         try {

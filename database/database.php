@@ -12,7 +12,19 @@ class DatabaseHelper
 
     public function getOperatori()
     {
-        $stmt = $this->db->prepare("SELECT DISTINCT operatori.* FROM operatori LEFT JOIN contratti_impiego ON operatori.CF = contratti_impiego.CF ORDER BY contratti_impiego.data_inizio + contratti_impiego.durata DESC ");
+        $stmt = $this->db->prepare("SELECT DISTINCT operatori.* FROM operatori LEFT JOIN contratti_impiego ON operatori.CF = contratti_impiego.CF ORDER BY contratti_impiego.data_inizio + INTERVAL contratti_impiego.durata DAY  DESC ");
+        $stmt->execute();
+        $result = $stmt->get_result();
+        return $result->fetch_all(MYSQLI_ASSOC);
+    }
+
+    public function getOperatoriAttivi()
+    {
+        $stmt = $this->db->prepare("SELECT DISTINCT operatori.* 
+            FROM operatori 
+            LEFT JOIN contratti_impiego 
+            ON operatori.CF = contratti_impiego.CF 
+            WHERE contratti_impiego.data_inizio + INTERVAL contratti_impiego.durata DAY > CURRENT_DATE()");
         $stmt->execute();
         $result = $stmt->get_result();
         return $result->fetch_all(MYSQLI_ASSOC);
@@ -657,6 +669,26 @@ class DatabaseHelper
         return $result->fetch_all(MYSQLI_ASSOC);
     }
 
+    public function getVendite($idCicloProduttivo)
+    {
+        $stmt = $this->db->prepare("SELECT * FROM vendite WHERE idCicloProduttivo = ?");
+        $stmt->bind_param("i", $idCicloProduttivo);
+        $stmt->execute();
+        $result = $stmt->get_result();
+        return $result->fetch_all(MYSQLI_ASSOC);
+    }
+
+    public function getRaccolti($idCicloProduttivo)
+    {
+        $stmt = $this->db->prepare("SELECT * FROM raccolti WHERE idCicloProduttivo = ?");
+        $stmt->bind_param("i", $idCicloProduttivo);
+        $stmt->execute();
+        $result = $stmt->get_result();
+        return $result->fetch_all(MYSQLI_ASSOC);
+    }
+
+
+
     public function getCategorie()
     {
         $stmt = $this->db->prepare("SELECT nome_categoria FROM categorie_lavorazioni");
@@ -832,7 +864,7 @@ class DatabaseHelper
             INNER JOIN cicli_produttivi ON colture.nome_coltura = cicli_produttivi.coltura_coltivata
             INNER JOIN raccolti ON raccolti.idCicloProduttivo = cicli_produttivi.idCicloProduttivo 
             WHERE raccolti.idCicloProduttivo = ? AND raccolti.data= ?");
-        $stmt->bind_param("is", $ciclo,$dataRaccolta);
+        $stmt->bind_param("is", $ciclo, $dataRaccolta);
         $stmt->execute();
         $checkResult = $stmt->get_result();
         $row = $checkResult->fetch_assoc();
@@ -842,13 +874,13 @@ class DatabaseHelper
         SET bilancio = ?
         WHERE idCicloProduttivo = ?");
         $stmt->bind_param("si", $guadagno, $ciclo);
-        if(!$stmt->execute()){
+        if (!$stmt->execute()) {
             return false;
         }
 
         $stmt = $this->db->prepare("INSERT INTO vendite (idCicloProduttivo,data_raccolta,data_vendita,acquirente,ricavo) VALUES (?,?,?,?,?)");
-        $stmt->bind_param("isssi", $ciclo, $dataRaccolta,$data,$acquirente,$guadagno);
-        if(!$stmt->execute()){
+        $stmt->bind_param("isssi", $ciclo, $dataRaccolta, $data, $acquirente, $guadagno);
+        if (!$stmt->execute()) {
             return false;
         }
 
