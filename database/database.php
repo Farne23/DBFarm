@@ -511,9 +511,9 @@ class DatabaseHelper
                                         VALUES (?, ?, ?)");
             $stmt->bind_param("iss", $idTerreno, $coltura, $datainizio);
         } else {
-            $stmt = $this->db->prepare("INSERT INTO cicli_produttivi (idTerreno, coltura_coltivata, data_inizio, costo, proprietario) 
+            $stmt = $this->db->prepare("INSERT INTO cicli_produttivi (idTerreno, coltura_coltivata, data_inizio, costo, proprietario,bilancio) 
                                         VALUES (?, ?, ?, ?, ?)");
-            $stmt->bind_param("issds", $idTerreno, $coltura, $datainizio, $costo, $proprietario);
+            $stmt->bind_param("issds", $idTerreno, $coltura, $datainizio, $costo, $proprietario,$costo);
         }
 
         return $stmt->execute();
