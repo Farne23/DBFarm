@@ -55,10 +55,49 @@ class DatabaseHelper
         $stmt->execute();
         $result = $stmt->get_result();
         $resultComplete = $result->fetch_all(MYSQLI_ASSOC);
-        // foreach ($resultComplete as &$edificio) {
-        //     $edificio["content"] = $this->getMagazzinoContent($edificio["idEdificio"]);
-        // }
+        foreach ($resultComplete as &$edificio) {
+            $edificio["content"] = $this->getRaccoltiInvenduti($edificio["idEdificio"]);
+            $edificio["giacenza"] = $this->getGiacenza($edificio["idEdificio"])[0]['giacenza'];
+        }
         return $resultComplete;
+    }
+
+    function getRaccoltiInvenduti(
+        $edificio
+    ) {
+        $stmt = $this->db->prepare("SELECT raccolti.*, cicli_produttivi.coltura_coltivata
+            FROM raccolti
+            LEFT JOIN vendite 
+            ON vendite.idCicloProduttivo = raccolti.idCicloProduttivo 
+            AND raccolti.data = vendite.data_raccolta
+            INNER JOIN cicli_produttivi 
+            ON raccolti.idCicloProduttivo = cicli_produttivi.idCicloProduttivo
+            WHERE raccolti.idSilo = ?
+            AND vendite.idCicloProduttivo IS NULL");
+        $stmt->bind_param("i", $edificio);
+        $stmt->execute();
+        $result = $stmt->get_result();
+        return $result->fetch_all(MYSQLI_ASSOC);
+    }
+
+    function getGiacenza($edificio)
+    {
+        $stmt = $this->db->prepare("SELECT 
+            COALESCE(SUM(raccolti.quantita), 0) AS giacenza
+            FROM 
+                raccolti
+            LEFT JOIN 
+                vendite 
+            ON 
+                raccolti.idCicloProduttivo = vendite.idCicloProduttivo 
+                AND raccolti.data = vendite.data_raccolta
+            WHERE 
+            raccolti.idSilo = ?
+            AND vendite.idCicloProduttivo IS NULL");
+        $stmt->bind_param("i", $edificio);
+        $stmt->execute();
+        $result = $stmt->get_result();
+        return $result->fetch_all(MYSQLI_ASSOC);
     }
 
     function registraNuovoOperatore($CF, $nome, $cognome, $dataNascita, $telefono)
@@ -483,6 +522,13 @@ class DatabaseHelper
         $quantita,
         $silo
     ) {
+        $checkstmt = $this->db->prepare("SELECT capacita_silo from edifici WHERE idEdificio = ?");
+        $checkstmt->bind_param("i", $silo);
+        $checkstmt->execute();
+        $result = $checkstmt->get_result();
+        if ($quantita > ($result->fetch_all(MYSQLI_ASSOC)[0]['capacita_silo'] - $this->getGiacenza($silo)[0]['giacenza'])) {
+            return false;
+        }
         $stmt = $this->db->prepare("INSERT INTO raccolti (idCicloProduttivo,data,quantita,idSilo) 
         VALUES (?, ?, ?, ?)");
         $stmt->bind_param("isii", $ciclo, $data, $quantita, $silo);
@@ -723,7 +769,7 @@ class DatabaseHelper
         }
 
         $updateStmt = $this->db->prepare("UPDATE cicli_produttivi
-                SET bilancio = bilancio + (
+                SET bilancio = bilancio - (
                     SELECT 
                         (
                             SELECT SUM(costo_orario) 
@@ -772,6 +818,40 @@ class DatabaseHelper
         if (intval($row['quantita']) < $quantita) {
             return false;
         }
+        return true;
+    }
+
+    function registraVendita(
+        $ciclo,
+        $dataRaccolta,
+        $data,
+        $acquirente
+    ) {
+        $stmt = $this->db->prepare("SELECT prezzo*quantita as guadagno, prezzo, quantita
+            FROM colture 
+            INNER JOIN cicli_produttivi ON colture.nome_coltura = cicli_produttivi.coltura_coltivata
+            INNER JOIN raccolti ON raccolti.idCicloProduttivo = cicli_produttivi.idCicloProduttivo 
+            WHERE raccolti.idCicloProduttivo = ? AND raccolti.data= ?");
+        $stmt->bind_param("is", $ciclo,$dataRaccolta);
+        $stmt->execute();
+        $checkResult = $stmt->get_result();
+        $row = $checkResult->fetch_assoc();
+        $guadagno = intval($row['guadagno']);
+
+        $stmt = $this->db->prepare("UPDATE cicli_produttivi 
+        SET bilancio = ?
+        WHERE idCicloProduttivo = ?");
+        $stmt->bind_param("si", $guadagno, $ciclo);
+        if(!$stmt->execute()){
+            return false;
+        }
+
+        $stmt = $this->db->prepare("INSERT INTO vendite (idCicloProduttivo,data_raccolta,data_vendita,acquirente,ricavo) VALUES (?,?,?,?,?)");
+        $stmt->bind_param("isssi", $ciclo, $dataRaccolta,$data,$acquirente,$guadagno);
+        if(!$stmt->execute()){
+            return false;
+        }
+
         return true;
     }
 }

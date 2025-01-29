@@ -469,3 +469,11 @@ h4 {
     border-collapse: collapse;
     width: 100%;
 }
+
+ul.raccolti-list li{
+    padding: 5px;
+}
+
+.raccolti-details{
+    padding: 5px;
+}

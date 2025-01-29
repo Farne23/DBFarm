@@ -674,5 +674,16 @@ CREATE TABLE raccolti (
     PRIMARY KEY (idCicloProduttivo, data), 
     FOREIGN KEY (idCicloProduttivo) REFERENCES 	cicli_produttivi(idCicloProduttivo), 
     FOREIGN KEY (idSilo) REFERENCES edifici(idEdificio),
-    CONSTRAINT unique_raccolto UNIQUE (idCicloProduttivo, data) 
+    UNIQUE (idCicloProduttivo, data) 
+);
+
+CREATE TABLE vendite (
+    idCicloProduttivo INT NOT NULL,      
+    data_raccolta DATE NOT NULL,                               
+    data_vendita DATE NOT NULL,          
+    acquirente VARCHAR(255) NOT NULL,    
+    ricavo DECIMAL(10, 2) NOT NULL,      
+    PRIMARY KEY (idCicloProduttivo, data_raccolta), 
+    FOREIGN KEY (idCicloProduttivo, data_raccolta) REFERENCES raccolti(idCicloProduttivo, data),  
+    UNIQUE (idCicloProduttivo, data_raccolta)  
 );

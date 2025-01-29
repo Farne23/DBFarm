@@ -169,6 +169,20 @@ try {
             } else {
                 echo json_encode(['success' => false]);
             }
+            break;
+        case "vendita":
+            if (
+                $dbh->registraVendita(
+                    $data['ciclo'],
+                    $data['dataRaccolta'],
+                    $data['data'],
+                    $data['acquirente']
+                )
+            ) {
+                echo json_encode(['success' => true]);
+            } else {
+                echo json_encode(['success' => false]);
+            }
 
             break;
 
