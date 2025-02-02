@@ -140,27 +140,6 @@ CREATE TABLE depositi (
     FOREIGN KEY (idEdificio) REFERENCES edifici(idEdificio)
 );
 
-DELIMITER $$
-
-CREATE TRIGGER check_capacity_before_update
-BEFORE UPDATE ON depositi
-FOR EACH ROW
-BEGIN
-    DECLARE total_quantity INT;
-    IF (SELECT tipo_magazzino FROM edifici WHERE idEdificio = NEW.idEdificio) = 1 THEN
-        SELECT SUM(quantita) INTO total_quantity
-        FROM depositi
-        WHERE idEdificio = NEW.idEdificio
-        AND idProdotto != NEW.idProdotto; 
-        IF (total_quantity + NEW.quantita) > (SELECT capacita_magazzino FROM edifici WHERE idEdificio = NEW.idEdificio) THEN
-            SIGNAL SQLSTATE '45000'
-            SET MESSAGE_TEXT = 'La quantità totale nel magazzino supera la sua capacità.';
-        END IF;
-    END IF;
-END$$
-
-DELIMITER ;
-
 -- Creazione della tabella nutrizioni
 CREATE TABLE nutrizioni (
     nome_coltura VARCHAR(100),
