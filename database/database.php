@@ -570,7 +570,8 @@ class DatabaseHelper
             INNER JOIN terreni ON terreni.idTerreno = rilevazioni.idTerreno
             INNER JOIN granulometrie ON terreni.granulometria = granulometrie.nome_granulometria
             AND rilevazioni.data = CURRENT_DATE 
-            AND cicli_produttivi.idTerreno = ? ");
+            AND ISNULL(cicli_produttivi.data_fine)
+            AND cicli_produttivi.idTerreno = ?");
         $stmt->bind_param("i", $idTerreno);
         $stmt->execute();
         $result = $stmt->get_result();
