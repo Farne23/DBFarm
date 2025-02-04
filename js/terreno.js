@@ -22,6 +22,7 @@ document.getElementById('newCicloForm').addEventListener('submit', async functio
             body: JSON.stringify(data),
         });
         const result = await response.json();
+        console.log(result);
 
         if (result.success) {
             const newCicloInput = document.getElementById('newCicloInput');

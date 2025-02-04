@@ -511,13 +511,6 @@ CREATE TABLE terreni (
     FOREIGN KEY (granulometria) REFERENCES granulometrie(nome_granulometria)
 );
 
-INSERT INTO terreni (nome, superficie, perc_limo, perc_sabbia, perc_argilla, granulometria)
-VALUES
-    ('Terreno 1', 100.00, 20.0, 60.0, 20.0, 'Sabbioso Grosso'),
-    ('Terreno 2', 150.00, 30.0, 50.0, 20.0, 'Argilloso'),
-    ('Terreno 3', 200.00, 25.0, 55.0, 20.0, 'Limoso Sabbioso'),
-    ('Terreno 4', 180.00, 10.0, 70.0, 20.0, 'Humus Argilloso'),
-    ('Terreno 5', 120.00, 15.0, 65.0, 20.0, 'Torba Argillosa');
 
 -- Tabella 'dati_catastali'
 CREATE TABLE dati_catastali (
@@ -529,13 +522,6 @@ CREATE TABLE dati_catastali (
     FOREIGN KEY (idTerreno) REFERENCES terreni(idTerreno)
 );
 
-INSERT INTO dati_catastali (idTerreno, comune, particella, sezione)
-VALUES
-    (1, 'Comune A', 'P1', 'A'),
-    (2, 'Comune B', 'P2', 'B'),
-    (3, 'Comune C', 'P3', 'C'),
-    (4, 'Comune D', 'P4', 'D'),
-    (5, 'Comune E', 'P5', 'E');
 
 -- Tabella 'cicli_produttivi'
 CREATE TABLE cicli_produttivi (
@@ -550,20 +536,6 @@ CREATE TABLE cicli_produttivi (
     FOREIGN KEY (idTerreno) REFERENCES terreni(idTerreno),
     FOREIGN KEY (coltura_coltivata) REFERENCES colture(nome_coltura)
 );
-
-INSERT INTO cicli_produttivi (idTerreno, coltura_coltivata, data_inizio, data_fine, bilancio, proprietario, costo)
-VALUES
-    (1, 'Frumento', '2023-03-01', '2023-09-01', 1350, NULL,NULL),
-    (1, 'Mais', '2023-10-01', '2024-08-01', -1000.00,  NULL,NULL),
-    (1, 'Mais', '2024-10-01', NULL, -100.00,  NULL,NULL),
-    (2, 'Soia', '2023-04-01', '2023-08-01', 1800.00,  NULL,NULL),
-    (2, 'Orzo', '2023-09-01', NULL, -900.00,  NULL,NULL),
-    (3, 'Mais', '2022-03-01', '2022-09-01', 2000.00, NULL,NULL),
-    (3, 'Riso', '2023-04-01', NULL, -2500.00,  NULL,NULL),
-    (4, 'Frumento', '2022-05-01', '2022-11-01', 3000.00,  NULL,NULL),
-    (4, 'Soia', '2023-02-01', NULL, -3200.00, NULL,NULL),
-    (5, 'Orzo', '2023-01-01', '2023-06-01', 1100.00, 'Marco rossi', 950.00),
-    (5, 'Riso', '2023-07-01', NULL, -2000.00, 'Marco rossi', 1500.00);
 
 -- Tabella 'categorie_lavorazioni'
 CREATE TABLE categorie_lavorazioni (
@@ -594,10 +566,6 @@ CREATE TABLE lavorazioni (
 ALTER TABLE terreni
 ADD FOREIGN KEY (idCicloProduttivo, numero_lavorazione)
 REFERENCES lavorazioni(idCicloProduttivo, numero_lavorazione);
-
-INSERT INTO lavorazioni (idCicloProduttivo,numero_lavorazione,categoria,data_inizio)
-VALUES
-(3,1,"Aratura", '2024-10-01');
 
 UPDATE terreni
 SET 

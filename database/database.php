@@ -506,14 +506,16 @@ class DatabaseHelper
             return false;
         }
 
+
         if ($costo == "" || $proprietario == "") {
             $stmt = $this->db->prepare("INSERT INTO cicli_produttivi (idTerreno, coltura_coltivata, data_inizio) 
                                         VALUES (?, ?, ?)");
             $stmt->bind_param("iss", $idTerreno, $coltura, $datainizio);
         } else {
+            $costo = -$costo;
             $stmt = $this->db->prepare("INSERT INTO cicli_produttivi (idTerreno, coltura_coltivata, data_inizio, costo, proprietario,bilancio) 
-                                        VALUES (?, ?, ?, ?, ?)");
-            $stmt->bind_param("issds", $idTerreno, $coltura, $datainizio, $costo, $proprietario,$costo);
+                                        VALUES (?, ?, ?, ?, ?,?)");
+            $stmt->bind_param("issdsd", $idTerreno, $coltura, $datainizio, $costo, $proprietario,$costo);
         }
 
         return $stmt->execute();
